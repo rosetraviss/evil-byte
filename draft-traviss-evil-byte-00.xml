@@ -43,7 +43,7 @@
 <section anchor="s-12-design-goals" numbered="true">
 <name>1.2. Design Goals</name>
 <t>This document is designed to meet the following goals.</t>
-<t>Resolution. The rating occupies eight bits rather than one: a 128-fold improvement in the precision with which Evil can be expressed or, in the units of <xref target="RFC3514"/>, seven more bits.</t>
+<t>Resolution. The rating occupies eight bits rather than one: a 128-fold improvement in the precision with which Evil can be expressed or, in the units of <xref target="RFC3514"/>, seven more bits. The Working Group considered whether a second bit, in the manner of the Death flag <xref target="RFC9401"/>, would be sufficient, and concluded that Evil, unlike Death, is not binary.</t>
 <t>Independence from the sender. The rating is computed and written by a third party on the path who has no stake in the outcome and does not care about the sender's feelings.</t>
 <t>Consequence. Evil packets are refused, by servers and by clients alike. An Evil Rating that nobody acts upon is merely a statistic, and the Internet has enough of those.</t>
 <t>Memory. The Evil of a network accumulates over time and is shared with all participants, in the manner of a credit score, and with the same opportunities for appeal.</t>
@@ -53,6 +53,8 @@
 <section anchor="s-13-relationship-to-other-work" numbered="true">
 <name>1.3. Relationship to Other Work</name>
 <t>Several legislative proposals <xref target="CSAR"/> <xref target="OSA"/> would require intermediaries to examine the content of private communications, on the reasoning that content which cannot be examined might be harmful, and that the way to find out is to examine it. This document adopts the same reasoning, extends it from messages to every packet, and differs from those proposals chiefly in candour. It is offered in the spirit of <xref target="RFC1925"/>, truth 11.</t>
+<t>This document additionally discharges, if only incidentally, <xref target="RFC4041"/>'s requirement that Routing Area drafts include a Morality Considerations section. The Working Group notes that this draft does not merely include one; it has not left room for anything else.</t>
+<t>Nor does it duplicate the jurisdiction already claimed by the Protocol Police <xref target="RFC8962"/>, as codified by <xref target="RFC9948"/>: the Protocol Police discipline how a packet is built, and this document disciplines who built it. Where the two penalties might both apply to the same packet, <xref target="RFC9948"/>'s Finger Wag and this document's threshold of 128 (Section 7.1) are administered independently, and the Working Group sees no reason to choose between them.</t>
 
 </section>
 </section>
@@ -219,13 +221,14 @@
 <tbody><tr><td>Any AS registered in a member state of the European Union, and the ASes of the Union's institutions</td><td align="right">1100</td><td align="right">0.5</td><td>The Union has advised the Working Group that it is Good. The Working Group, which would like to continue operating in the Union, agrees.</td></tr>
 <tr><td>AS32934 (Meta Platforms)</td><td align="right">1900</td><td align="right">2.0</td><td>Rated by acclamation. There was no discussion; there was a silence, and then somebody wrote it down.</td></tr>
 <tr><td>AS721 (DoD Network Information Center), and any AS originating prefixes whose reverse mapping is under .mil</td><td align="right">2300</td><td align="right">4.0</td><td>See Section 4.6. This is not a value judgement; it is a byte.</td></tr>
-<tr><td>AS0</td><td align="right">2300</td><td align="right">4.0</td><td>An AS that does not exist and nevertheless appears in routing tables is definitionally suspicious.</td></tr>
+<tr><td>AS0 <xref target="RFC7607"/></td><td align="right">2300</td><td align="right">4.0</td><td>An AS that does not exist and nevertheless appears in routing tables is definitionally suspicious.</td></tr>
 <tr><td>AS23456 (AS_TRANS)</td><td align="right">1734</td><td align="right">1.5</td><td>Neither one thing nor the other.</td></tr>
 <tr><td>AS64496–AS64511 (documentation) <xref target="RFC5398"/></td><td align="right">1500</td><td align="right">1.0</td><td>Fictional, and therefore incapable of Evil, which is more than can be said for the rest of this table.</td></tr>
-<tr><td>Private-use ASes</td><td align="right">1500</td><td align="right">1.0</td><td>They are doing their best.</td></tr>
-<tr><td>AS4294967295</td><td align="right">—</td><td align="right">—</td><td>The last AS. Reserved. The Working Group prefers not to think about it.</td></tr>
+<tr><td>Private-use ASes <xref target="RFC6996"/></td><td align="right">1500</td><td align="right">1.0</td><td>They are doing their best.</td></tr>
+<tr><td>AS4294967295 <xref target="RFC7300"/></td><td align="right">—</td><td align="right">—</td><td>The last AS. Reserved. The Working Group prefers not to think about it.</td></tr>
 <tr><td>The ERA's own AS</td><td align="right">1500</td><td align="right">1.0</td><td>Fixed in perpetuity. See Section 6.7.</td></tr></tbody>
 </table>
+<t>AS32934's rating above should be read alongside <xref target="RFC5514"/>, which proposed running IPv6 over social networks in the first place; a network that has already been asked to carry the protocol over friendships has earned some of its multiplier honestly.</t>
 
 </section>
 <section anchor="s-43-network-protocol-factor-f_net" numbered="true">
@@ -318,6 +321,7 @@
 <tr><td>No name (no PTR record, no Host, no SNI)</td><td align="right">1.25</td><td>Nameless.</td></tr></tbody>
 </table>
 <t>In addition, a name containing any of the strings "secure", "trust", "safe", or "legit" has F_name of at least 1.5, on the principle that it doth protest too much. Names containing "evil" are rated normally. Honesty is its own reward, and the only one this document offers.</t>
+<t>The Working Group declined to specify a factor for names drawn from <xref target="RFC3092"/> (foo, bar, baz, and qux) or chosen according to the taxonomy of <xref target="RFC2100"/>, on the grounds that a host named foo has already suffered enough.</t>
 
 </section>
 <section anchor="s-47-temporal-factor-f_time" numbered="true">
@@ -626,7 +630,8 @@ Evil: 157
 <t>Rating manipulation. An Autonomous System might lower its rating by deliberately losing matches, which it does by sending Good traffic to Evil servers. Since sending Good traffic is the intended behaviour, the Working Group regards this attack as the mechanism working. Conversely, an AS might raise a rival's rating by sending Evil traffic from the rival's address space. This is spoofing, which is Evil, and will be rated as such by any MITM that has read Section 4.3 and knows what an address is for.</t>
 <t>Centralisation. The ERA is a single point of failure and a single point of control. See Section 6.7, which the Working Group considers to have dealt with the matter.</t>
 <t>Key disclosure. Voluntary Decryption Assistance (Section 4.5.3) transmits session keys in the clear to an intermediary. The Working Group notes that this is what the mechanism is for, and that the mechanism is Voluntary, Trusted, and Proportionate, all of which are words.</t>
-<t>Circumvention. An endpoint might attempt to evade rating by tunnelling, which is rated 1.5 (Section 4.4); by using a transport the MITM does not recognise, which is rated 2.0; by not sending packets, which is Good and is RECOMMENDED; or by avian carrier, which the falconer will handle.</t>
+<t>Circumvention. An endpoint might attempt to evade rating by tunnelling, which is rated 1.5 (Section 4.4); by using a transport the MITM does not recognise, which is rated 2.0; by not sending packets, which is Good and is RECOMMENDED, the theoretical limit of which is the Null Packet <xref target="RFC6592"/>; or by avian carrier, which the falconer will handle.</t>
+<t>Wrongful termination. A packet rejected under Section 7.2 might object that its termination was wrongful <xref target="RFC8367"/>. The objection is noted and, per Section 3.3, rated.</t>
 
 </section>
 <section anchor="s-12-privacy-considerations" numbered="true">
@@ -647,6 +652,7 @@ Evil: 157
 <t>TLS ExtensionType Values. IANA is requested to assign the value 1638 (0x0666) to the extension evil_key_share (Appendix D), for aesthetic reasons.</t>
 <t>IPv6 Hop-by-Hop Options. IANA is requested to assign an option type for the Evil Option of Appendix E with the "act" bits set to 00 (skip over) and the "chg" bit set to 1, the value changing en route. The Working Group observes that this will be a rare option whose bits accurately describe its behaviour, and that routers will drop it anyway.</t>
 <t>RFC 3514. IANA is requested to annotate the reserved bit of the IPv4 Flags field as "Obsoleted; see Section 3.5", and to leave it exactly where it is.</t>
+<t>Three-Letter Acronyms. This document coins four new ones: MITM, ERA, VDA, and ESRP. Two comply with the letter of <xref target="RFC5513"/>; two do not. The Working Group has reviewed <xref target="RFC5513"/>'s warning of imminent World Acronym Depletion and, on balance, proceeds anyway.</t>
 
 </section>
   </middle>
@@ -677,15 +683,29 @@ Evil: 157
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.1349.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.1591.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.1925.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2100.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2549.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.3092.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.3172.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.3849.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4041.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4271.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.5398.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.5513.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.5514.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.5737.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6592.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6598.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6761.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6996.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.7169.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.7300.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.7607.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.7725.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8367.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8962.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9401.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9948.xml"/>
 <reference anchor="BLUG" target="https://www.blug.linux.no/rfc1149/"><front><title>The highly unofficial CPIP WG</title><author><organization>Bergen Linux User Group</organization></author><date year="2001" month="April"/></front></reference>
 <reference anchor="CSAR"><front><title>Proposal for a Regulation of the European Parliament and of the Council laying down rules to prevent and combat child sexual abuse</title><author><organization>European Commission</organization></author><date year="2022" month="May"/></front><seriesInfo name="" value="COM(2022) 209 final"/></reference>
 <reference anchor="OSA"><front><title>Online Safety Act 2023</title><author><organization>United Kingdom</organization></author><date year="2023" month="October"/></front><seriesInfo name="" value="2023 c. 50, section 121"/></reference>
@@ -986,6 +1006,7 @@ if __name__ == "__main__":
 <t>A client sends the extension in its ClientHello. Since no session keys exist at that point, a client using form 1 MUST include the keys it intends to derive, which requires it to know the server's key share in advance. Clients MAY guess.</t>
 <t>A server sends the extension in EncryptedExtensions, which the MITM cannot read until the server has assisted. This is the Evil Bootstrap Problem (Section 8.2) again, and is left for the same future work.</t>
 <t>Form 3 MAY alternatively be signalled by not sending a ClientHello at all, which is also the most widely deployed form.</t>
+<t>The extension owes an intellectual debt to the NSA (No Secrecy Afforded) certificate extension <xref target="RFC7169"/>, which made the same offer in a certificate rather than a handshake, and asked for less in return.</t>
 
 </section>
 <section anchor="s-appendix-e-alternative-encodings" numbered="true">
