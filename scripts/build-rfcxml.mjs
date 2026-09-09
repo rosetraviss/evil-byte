@@ -34,18 +34,22 @@ for (const heading of ["Abstract", "Status of This Memo", "Copyright Notice", "T
 // bibxml source. RFCs are pulled live from bib.ietf.org; everything else is
 // hand-described here from Section 14's prose.
 const RFC_REFS = new Set([
-  "RFC791", "RFC1035", "RFC1149", "RFC1349", "RFC1591", "RFC1925", "RFC2119",
-  "RFC2324", "RFC2474", "RFC2549", "RFC3168", "RFC3172", "RFC3514", "RFC3849",
-  "RFC4271", "RFC5398", "RFC5737", "RFC6214", "RFC6598", "RFC6761", "RFC6919",
-  "RFC7168", "RFC7725", "RFC8174", "RFC8200", "RFC8259", "RFC8446", "RFC8615",
-  "RFC9110",
+  "RFC791", "RFC1035", "RFC1149", "RFC1349", "RFC1591", "RFC1925", "RFC2100",
+  "RFC2119", "RFC2324", "RFC2474", "RFC2549", "RFC3092", "RFC3168",
+  "RFC3172", "RFC3514", "RFC3849", "RFC4041", "RFC4271", "RFC5398", "RFC5513",
+  "RFC5514", "RFC5737", "RFC6214", "RFC6592", "RFC6598", "RFC6761", "RFC6919",
+  "RFC6996", "RFC7168", "RFC7169", "RFC7300", "RFC7607", "RFC7725", "RFC8174",
+  "RFC8200", "RFC8259", "RFC8367", "RFC8446", "RFC8615", "RFC8962", "RFC9110",
+  "RFC9401", "RFC9948",
 ]);
 const NORMATIVE = ["RFC791", "RFC1035", "RFC1149", "RFC2119", "RFC2324", "RFC2474",
   "RFC3168", "RFC3514", "RFC6214", "RFC6919", "RFC7168", "RFC8174", "RFC8200",
   "RFC8259", "RFC8446", "RFC8615", "RFC9110", "ELO"];
-const INFORMATIVE = ["RFC1349", "RFC1591", "RFC1925", "RFC2549", "RFC3172", "RFC3849",
-  "RFC4271", "RFC5398", "RFC5737", "RFC6598", "RFC6761", "RFC7725", "BLUG", "CSAR",
-  "OSA", "IANA-PORTS"];
+const INFORMATIVE = ["RFC1349", "RFC1591", "RFC1925", "RFC2100", "RFC2549",
+  "RFC3092", "RFC3172", "RFC3849", "RFC4041", "RFC4271", "RFC5398", "RFC5513",
+  "RFC5514", "RFC5737", "RFC6592", "RFC6598", "RFC6761", "RFC6996", "RFC7169",
+  "RFC7300", "RFC7607", "RFC7725", "RFC8367", "RFC8962", "RFC9401", "RFC9948",
+  "BLUG", "CSAR", "OSA", "IANA-PORTS"];
 const OTHER_REFS = {
   ELO: { title: "The Rating of Chessplayers, Past and Present", author: "Elo, A. E.",
     date: { year: "1978" }, publisher: "Arco Publishing" },
