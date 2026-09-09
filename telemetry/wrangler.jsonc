@@ -20,7 +20,7 @@
     }
   ],
   "triggers": {
-    "crons": ["*/15 * * * *"]
+    "crons": ["*/5 * * * *"]
   },
   // Free plan's Cron Trigger CPU budget (10ms) cannot run this at all — Workers
   // Paid is required. This raises the ceiling for a batch with many distinct

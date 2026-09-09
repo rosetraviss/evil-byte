@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <title>Evil Byte Telemetry</title>
-<meta name="description" content="Live Evil Rating distribution across real Cloudflare traffic, computed from Log Explorer every 15 minutes — for validating draft-traviss-evil-byte-00's formula against reality.">
+<meta name="description" content="Live Evil Rating distribution across real Cloudflare traffic, computed from Log Explorer every 5 minutes — for validating draft-traviss-evil-byte-00's formula against reality.">
 <link rel="icon" href="https://evilbyte.net/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://evilbyte.net/styles.css">
 <style>
@@ -39,7 +39,7 @@
   <div class="wrap">
     <p class="eyebrow">§4 · evil rating telemetry</p>
     <h1>telemetry.evilbyte.net</h1>
-    <p class="lede">Every 15 minutes this pulls new HTTP request logs from Cloudflare Log Explorer across the account, computes an Evil Rating for each distinct requestor with the same formula <a href="https://evilbyte.net/calculator.html">the calculator</a> uses, and keeps one latest-seen row per client IP. This page is what that data actually looks like — not a demo, not a synthetic vector.</p>
+    <p class="lede">Every 5 minutes this pulls new HTTP request logs from Cloudflare Log Explorer across the account, computes an Evil Rating for each distinct requestor with the same formula <a href="https://evilbyte.net/calculator.html">the calculator</a> uses, and keeps one latest-seen row per client IP. This page is what that data actually looks like — not a demo, not a synthetic vector.</p>
 
     <div class="grid-auto" id="stat-tiles">
       <div class="card"><p class="empty-note">Loading…</p></div>

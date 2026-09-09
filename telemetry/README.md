@@ -1,6 +1,6 @@
 # telemetry.evilbyte.net
 
-Every 15 minutes, pulls new HTTP request logs from Cloudflare Log Explorer
+Every 5 minutes, pulls new HTTP request logs from Cloudflare Log Explorer
 across the whole Cloudflare account, computes an Evil Rating for each
 distinct requestor using the real formula
 ([`site/public/evil-formula.mjs`](../site/public/evil-formula.mjs), imported
@@ -126,7 +126,7 @@ Roughly in this order, each one settling something the next depends on:
    wrangler version).
 4. **After first deploy**, use the dashboard's Cron Trigger manual-run
    control (Workers & Pages → the Worker → Triggers) rather than waiting up
-   to 15 minutes for a natural tick.
+   to 5 minutes for a natural tick.
 5. **Regression check that the formula itself wasn't touched**:
    `cd ../evil-byte-src && pytest -v` and `cd ../evil-byte-go && go test -v ./...`
    should both still pass, since this pipeline only ever imports

@@ -1,6 +1,6 @@
 // Worker for telemetry.evilbyte.net.
 //
-// Every 15 minutes (Cron Trigger, see wrangler.jsonc), pulls new
+// Every 5 minutes (Cron Trigger, see wrangler.jsonc), pulls new
 // http_requests rows from Cloudflare's Log Explorer across the whole
 // account, computes an Evil Rating for each distinct requestor using the
 // real formula (site/public/evil-formula.mjs, imported — not
