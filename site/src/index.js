@@ -3,9 +3,11 @@
 // Serves the static site and, at /api/rate, actually plays the part of a
 // Morality-Inspecting Trusted Middleman (Section 5): it computes a live
 // Evil Rating for the visitor from real edge signals Cloudflare already
-// has on hand (request.cf), plus one honest live reverse-DNS lookup.
-// No payload is read. See Section 4.5.2: the absence of analysis is not
-// the absence of Evil, and this MITM does not pretend otherwise.
+// has on hand (request.cf), one honest live reverse-DNS lookup, and a
+// real query to the Evil Rating Authority at era.evilbyte.net (Section
+// 6) for the visitor's Autonomous System. No payload is read. See
+// Section 4.5.2: the absence of analysis is not the absence of Evil,
+// and this MITM does not pretend otherwise.
 
 import {
   evilRating,
@@ -15,12 +17,6 @@ import {
   timeFactorForParts,
 } from "../public/evil-formula.mjs";
 
-const AS_TABLE = {
-  32934: { value: 2.0, label: "AS32934 (Meta Platforms)", note: "Rated by acclamation (Section 4.2)." },
-  721: { value: 4.0, label: "AS721 (DoD Network Information Center)", note: "This is not a value judgement; it is a byte (Section 4.2)." },
-  0: { value: 4.0, label: "AS0", note: "An AS that does not exist and appears in routing tables is definitionally suspicious." },
-  23456: { value: 1.5, label: "AS23456 (AS_TRANS)", note: "Neither one thing nor the other." },
-};
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -49,24 +45,19 @@ async function handleRate(request) {
   // --- F_content (Section 4.5): this MITM performs no analysis. Honestly.
   const f_content = 2.0; // "unanalysed" — the Presumption of Evil, Section 4.5.2.
 
-  // --- F_name (Section 4.6): one real, best-effort reverse-DNS lookup via 1.1.1.1.
-  let reverseName = null;
+  // --- F_name (Section 4.6) and F_AS (Section 4.2): one reverse-DNS lookup
+  // and one query to the ERA (Section 6), run concurrently.
   let nameNote = "No PTR record, or the lookup did not return in time.";
-  if (!isV6) {
-    try {
-      reverseName = await reverseDnsV4(ip);
-      if (reverseName) nameNote = "Reverse DNS (PTR) on the connecting address.";
-    } catch {
-      /* fail closed to Nameless, not to an error page */
-    }
-  } else {
-    nameNote = "IPv6 reverse lookups are left as future work (in the tradition of Section 8.2).";
-  }
+  if (isV6) nameNote = "IPv6 reverse lookups are left as future work (in the tradition of Section 8.2).";
+
+  const [reverseName, eraResult] = await Promise.all([
+    isV6 ? Promise.resolve(null) : reverseDnsV4(ip).catch(() => null),
+    queryEra(cf.asn).catch(() => null),
+  ]);
+  if (reverseName) nameNote = "Reverse DNS (PTR) on the connecting address.";
   const f_name = reverseName ? nameFactorFromName(reverseName) : NO_NAME;
 
-  // --- F_AS (Section 4.2): the ERA's published table, for the ASNs it has bothered to rate.
-  const asHit = AS_TABLE[cf.asn];
-  const f_as = asHit ? asHit.value : 1.0;
+  const f_as = eraResult ? eraResult.multiplier : 1.0;
 
   // --- F_time (Section 4.7): local time at the source, estimated from cf.timezone.
   const tz = cf.timezone || "UTC";
@@ -89,7 +80,10 @@ async function handleRate(request) {
       netKey,
       asn: cf.asn ?? null,
       asOrganization: cf.asOrganization ?? null,
-      asNote: asHit ? asHit.note : "No multiplier on file; F_AS = 1.0 (Section 4.2).",
+      asRating: eraResult ? eraResult.rating : null,
+      asNote: eraResult
+        ? eraResult.reasons[0]
+        : "The ERA had no opinion in time; F_AS = 1.0 (Section 4.2) — see era.evilbyte.net",
       country: cf.country ?? null,
       colo: cf.colo ?? null,
       tlsVersion: cf.tlsVersion ?? null,
@@ -105,6 +99,19 @@ async function handleRate(request) {
   return Response.json(body, {
     headers: { "cache-control": "no-store", "content-type": "application/json; charset=utf-8" },
   });
+}
+
+// Section 4.2: "F_AS is the multiplier published by the ERA... An AS for
+// which the ERA publishes no multiplier has F_AS = 1.0." This is that
+// query, for real, against era.evilbyte.net (Section 6).
+async function queryEra(asn) {
+  if (asn == null) return null;
+  const resp = await fetch(`https://era.evilbyte.net/asn/${asn}`, {
+    signal: AbortSignal.timeout(800),
+    cf: { cacheTtl: 3600, cacheEverything: true },
+  });
+  if (!resp.ok) return null;
+  return resp.json();
 }
 
 async function reverseDnsV4(ip) {

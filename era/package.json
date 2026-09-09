@@ -1,0 +1,18 @@
+{
+  "name": "evil-byte-era",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build:db": "node scripts/build-asn-db.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.130.0"
+  },
+  "allowScripts": {
+    "workerd@1.20260908.1": true,
+    "esbuild@0.28.1": true
+  }
+}

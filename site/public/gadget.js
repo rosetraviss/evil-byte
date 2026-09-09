@@ -44,7 +44,10 @@
       const f = data.factors || {};
       const parts = [
         row("network", `${ev.ipVersion ?? "?"} — F_net ${fmt(f.f_net)}`),
-        row("autonomous system", `${ev.asOrganization ? ev.asOrganization : "unrated"}${ev.asn != null ? " (AS" + ev.asn + ")" : ""} — F_AS ${fmt(f.f_as)}`),
+        row(
+          "autonomous system",
+          `${ev.asOrganization ? ev.asOrganization : "unrated"}${ev.asn != null ? ` (<a href="https://era.evilbyte.net/#AS${ev.asn}" target="_blank" rel="noopener">AS${ev.asn}</a>)` : ""} — F_AS ${fmt(f.f_as)}${ev.asRating != null ? `, ERA rating ${ev.asRating}` : ""}`
+        ),
         row("edge / country", `${ev.colo ?? "?"} / ${ev.country ?? "?"}`),
         row("transport", `${ev.httpProtocol ?? "?"} — F_tx ${fmt(f.f_tx)}`),
         row("TLS", ev.tlsVersion ?? "none"),

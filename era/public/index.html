@@ -1,0 +1,87 @@
+<meta charset="utf-8">
+<title>The Evil Rating Authority</title>
+<meta name="description" content="Section 6 of draft-traviss-evil-byte-00: the central authority publishing an Evil multiplier for every Autonomous System on the Internet.">
+<link rel="icon" href="https://evilbyte.net/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://evilbyte.net/styles.css">
+<style>
+  .era-search { display:flex; gap:10px; margin:24px 0; flex-wrap:wrap; }
+  .era-search input { flex:1; min-width:180px; }
+  .era-result { display:none; }
+  .era-result.visible { display:block; }
+  .era-result .name { font-size:1.1rem; font-weight:700; margin:0 0 4px; }
+  .era-result .meta { font-family:var(--mono); font-size:12.5px; color:var(--text-faint); margin:0 0 14px; }
+  .era-reasons { list-style:none; margin:0; padding:0; font-family:var(--mono); font-size:12.5px; color:var(--text-dim); display:grid; gap:4px; }
+  .era-reasons li::before { content:"→ "; color:var(--evil); }
+  .era-error { color:var(--text-faint); font-size:14px; }
+  .stat-row { display:flex; justify-content:space-between; gap:12px; font-family:var(--mono); font-size:13px; padding:8px 0; border-bottom:1px solid var(--border); }
+  .stat-row:last-child { border-bottom:none; }
+  .endpoint { font-family:var(--mono); font-size:13px; background:var(--bg-panel-2); padding:10px 12px; border-radius:6px; margin:0 0 8px; overflow-x:auto; }
+  .endpoint .m { color:var(--good); font-weight:700; margin-right:8px; }
+</style>
+
+<nav class="site-nav" id="top">
+  <div class="wrap">
+    <a class="brand" href="https://evilbyte.net/"><span class="byte">EE</span> evilbyte</a>
+    <div class="nav-links">
+      <a href="https://evilbyte.net/draft.html">The Draft</a>
+      <a href="https://evilbyte.net/calculator.html">Formula</a>
+      <a href="https://evilbyte.net/rfc-process.html">Becoming an RFC</a>
+      <a href="/" class="current">The ERA</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">§6 · the evil rating authority</p>
+    <h1>era.evilbyte.net</h1>
+    <p class="lede">The central authority Section 6 describes: a published multiplier, F_AS, for every Autonomous System. No live Elo history runs behind these numbers — nobody's reporting real exchanges via ESRP (§6.4) — so what's served here is each AS's <em>initial</em> rating (§6.1), seeded per Section 4.2's own exceptions and a few pattern rules of the same kind, run across every allocated ASN on the Internet.</p>
+
+    <div class="era-search">
+      <input type="text" id="era-input" placeholder="ASN, e.g. 32934 or AS32934" inputmode="numeric">
+      <button class="btn btn--primary" id="era-go" type="button">Look up</button>
+    </div>
+
+    <div class="card era-result" id="era-result">
+      <p class="name" id="era-name"></p>
+      <p class="meta" id="era-meta"></p>
+      <ul class="era-reasons" id="era-reasons"></ul>
+    </div>
+    <p class="era-error" id="era-error"></p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">Right now</h2>
+    <div class="card" id="era-stats">
+      <p class="section-sub" style="margin:0">Loading…</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">API</h2>
+    <p class="section-sub">Everything returns JSON except the TXT-shaped endpoint, which is text/plain — a nod to §6.5's DNS scheme, minus a .arpa delegation nobody actually has.</p>
+    <div class="endpoint"><span class="m">GET</span>/asn/32934</div>
+    <div class="endpoint"><span class="m">GET</span>/32934.as.evil.arpa</div>
+    <div class="endpoint"><span class="m">GET</span>/32934.as.evil.arpa.txt <span style="color:var(--text-faint)">— the literal §6.5 wire format</span></div>
+    <div class="endpoint"><span class="m">GET</span>/stats</div>
+    <div class="endpoint"><span class="m">GET</span>/axfr <span style="color:var(--text-faint)">— the whole table, ~10MB (§6.5: "the last remaining legitimate use of AXFR")</span></div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>the evil rating authority · draft-traviss-evil-byte-00 · © <span data-year></span></div>
+    <div class="foot-links">
+      <a href="https://evilbyte.net/">evilbyte.net</a>
+      <a href="https://evilbyte.net/draft.html#6-the-evil-rating-authority">Section 6</a>
+      <a href="https://github.com/rosetraviss/evil-byte" target="_blank" rel="noopener">Source</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="https://evilbyte.net/site.js"></script>
+<script type="module" src="/era.js"></script>
