@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "evil-byte-telemetry",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-09",
+  "routes": [
+    { "pattern": "telemetry.evilbyte.net", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "evil-byte-telemetry",
+      // Placeholder — run `wrangler d1 create evil-byte-telemetry` (see README.md
+      // "Manual setup" in this directory) and paste the returned database_id here.
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+    }
+  ],
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+  // Free plan's Cron Trigger CPU budget (10ms) cannot run this at all — Workers
+  // Paid is required. This raises the ceiling for a batch with many distinct
+  // requestors; see src/index.js's ROW_LIMIT_PER_RUN for the matching row cap.
+  "limits": {
+    "cpu_ms": 300000
+  },
+  "observability": {
+    "enabled": true
+  }
+}
