@@ -39,12 +39,12 @@ const RFC_REFS = new Set([
   "RFC3172", "RFC3514", "RFC3849", "RFC4041", "RFC4271", "RFC5398", "RFC5513",
   "RFC5514", "RFC5737", "RFC6214", "RFC6592", "RFC6598", "RFC6761", "RFC6919",
   "RFC6996", "RFC7168", "RFC7169", "RFC7300", "RFC7607", "RFC7725", "RFC8174",
-  "RFC8200", "RFC8259", "RFC8367", "RFC8446", "RFC8615", "RFC8962", "RFC9110",
-  "RFC9401", "RFC9948",
+  "RFC8200", "RFC8259", "RFC8367", "RFC8615", "RFC8962", "RFC9110",
+  "RFC9401", "RFC9846", "RFC9948",
 ]);
 const NORMATIVE = ["RFC791", "RFC1035", "RFC1149", "RFC2119", "RFC2324", "RFC2474",
   "RFC3168", "RFC3514", "RFC6214", "RFC6919", "RFC7168", "RFC8174", "RFC8200",
-  "RFC8259", "RFC8446", "RFC8615", "RFC9110", "ELO"];
+  "RFC8259", "RFC8615", "RFC9110", "RFC9846", "ELO"];
 const INFORMATIVE = ["RFC1349", "RFC1591", "RFC1925", "RFC2100", "RFC2549",
   "RFC3092", "RFC3172", "RFC3849", "RFC4041", "RFC4271", "RFC5398", "RFC5513",
   "RFC5514", "RFC5737", "RFC6592", "RFC6598", "RFC6761", "RFC6996", "RFC7169",
@@ -71,6 +71,30 @@ function esc(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+// Requirement-level key words get <bcp14> markup, which is what idnits
+// checks for and what makes them render as key words rather than as
+// shouting. Longest phrase first, so "MUST NOT" wins over "MUST".
+//
+// RFC 6919's key words (Section 2.1) are matched first and then left
+// alone: <bcp14> is defined to hold BCP 14's own words, and xml2rfc
+// rejects anything else in it. Matching them anyway is what stops
+// "SHOULD CONSIDER" being marked up as a bare "SHOULD".
+const RFC6919_KEYWORDS = new Set([
+  "MUST (BUT WE KNOW YOU WON'T)", "SHOULD CONSIDER", "REALLY SHOULD NOT",
+  "OUGHT TO",
+]);
+const BCP14_PATTERN = new RegExp(
+  "MUST \\(BUT WE KNOW YOU WON'T\\)|REALLY SHOULD NOT|SHOULD CONSIDER" +
+    "|OUGHT TO" +
+    "|\\b(?:NOT RECOMMENDED|MUST NOT|SHALL NOT|SHOULD NOT" +
+    "|MUST|SHALL|SHOULD|RECOMMENDED|REQUIRED|OPTIONAL|MAY)\\b",
+  "g"
+);
+function withBcp14(text) {
+  return text.replace(BCP14_PATTERN, (kw) =>
+    RFC6919_KEYWORDS.has(kw) ? kw : `<bcp14>${kw}</bcp14>`);
+}
+
 // --- inline text: escape, then apply markdown inline tokens + xrefs ---
 function inline(tokens) {
   return tokens.map(inlineOne).join("");
@@ -79,7 +103,7 @@ function inlineOne(tok) {
   switch (tok.type) {
     case "text":
     case "escape":
-      return withXrefs(esc(tok.raw ?? tok.text));
+      return prose(tok.raw ?? tok.text);
     case "strong":
       return `<strong>${inline(tok.tokens)}</strong>`;
     case "em":
@@ -102,6 +126,11 @@ function xmlRefAnchor(anchor) {
 }
 function withXrefs(text) {
   return text.replace(XREF_PATTERN, (_, anchor) => `<xref target="${xmlRefAnchor(anchor)}"/>`);
+}
+// escape -> key words -> references, the order in which each pass can only
+// see text the earlier ones left alone.
+function prose(text) {
+  return withXrefs(withBcp14(esc(text)));
 }
 
 // --- block-level walk ---
@@ -138,8 +167,14 @@ function renderTable(token) {
 }
 
 function renderCode(token) {
-  if (token.lang === "python") {
-    return `<sourcecode type="python"><![CDATA[\n${token.text}\n]]></sourcecode>`;
+  // A labelled fence is code; an unlabelled one is a diagram, a header
+  // field, or a wire format, and stays artwork. markers="true" emits the
+  // <CODE BEGINS>/<CODE ENDS> lines idnits asks for around Code
+  // Components. Only "python" is named as a type: the rest are not in the
+  // RFC Editor's list of source code types.
+  if (token.lang) {
+    const type = token.lang === "python" ? ' type="python"' : "";
+    return `<sourcecode${type} markers="true"><![CDATA[\n${token.text}\n]]></sourcecode>`;
   }
   return `<artwork><![CDATA[\n${token.text}\n]]></artwork>`;
 }
@@ -159,7 +194,7 @@ function renderBlock(token) {
     case "space":
       return "";
     default:
-      return `<t>${withXrefs(esc(token.raw || ""))}</t>`;
+      return `<t>${prose(token.raw || "")}</t>`;
   }
 }
 
@@ -187,7 +222,7 @@ function rawText(headingTok) {
 // Markdown heading's own number renders as "5.  5.  Title".  Strip it
 // from the name only -- anchors stay as they are, so xrefs still resolve.
 function displayTitle(title) {
-  return title.replace(/^(?:Appendix\s+[A-Z]|\d+(?:\.\d+)*)\.\s+/, "");
+  return title.replace(/^(?:Appendix\s+[A-Z]|[A-Z](?:\.\d+)+|\d+(?:\.\d+)*)\.\s+/, "");
 }
 
 function renderSection(node, numbered = true) {
@@ -247,8 +282,8 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <keyword>evil</keyword>
     <keyword>security</keyword>
     <abstract>
-      <t>Firewalls, intrusion detection systems, and similar devices continue to have difficulty distinguishing packets that have malicious intent from those that are merely unusual. <xref target="RFC3514"/> addressed this problem by defining a security flag in the IPv4 header, the "evil bit", to be set by the sender of any packet with malicious intent. Twenty-four years of operational experience have shown that senders cannot be relied upon to set it, and that a single bit cannot express the range of Evil now observed on the Internet.</t>
-      <t>This document obsoletes the evil bit and replaces it with the Evil Byte: an eight-bit Evil Rating carried in every IPv4 and IPv6 packet, computed and set not by the sender but by a Morality-Inspecting Trusted Middleman (MITM) on the path, from a weighted product of the sender's Autonomous System, choice of protocols, content, name, and the time of day. Servers reject requests from Evil clients; clients discard responses from Evil servers; and the Evil of every Autonomous System is continuously re-estimated by an Elo rating system operated by a central Evil Rating Authority. The document also specifies the carriage of the octet over avian carriers.</t>
+      <t>Firewalls, intrusion detection systems, and similar devices continue to have difficulty distinguishing packets that have malicious intent from those that are merely unusual. RFC 3514 addressed this problem by defining a security flag in the IPv4 header, the "evil bit", to be set by the sender of any packet with malicious intent. Twenty-four years of operational experience have shown that senders cannot be relied upon to set it, and that a single bit cannot express the range of Evil now observed on the Internet.</t>
+      <t>This document obsoletes RFC 3514, replacing the evil bit with the Evil Byte: an eight-bit Evil Rating carried in every IPv4 and IPv6 packet, computed and set not by the sender but by a Morality-Inspecting Trusted Middleman (MITM) on the path, from a weighted product of the sender's Autonomous System, choice of protocols, content, name, and the time of day. Servers reject requests from Evil clients; clients discard responses from Evil servers; and the Evil of every Autonomous System is continuously re-estimated by an Elo rating system operated by a central Evil Rating Authority. The document also specifies the carriage of the octet over avian carriers.</t>
     </abstract>
   </front>
   <middle>
