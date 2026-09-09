@@ -47,9 +47,26 @@ cd evil-byte-go && go build ./... && go test ./...
 # the RFCXML, regenerated from the Markdown
 npm install && npm run build:rfcxml
 xml2rfc draft-traviss-evil-byte-00.xml --text   # requires `pip install xml2rfc`
+
+# the PDF, regenerated from the RFCXML
+npm run build:pdf
 ```
 
-CI runs all of the above on every push; see `.github/workflows/`.
+CI runs all of the above except `build:pdf` on every push; see
+`.github/workflows/`.
+
+`build:pdf` is `xml2rfc --pdf`, which is exactly what the IETF's
+author-tools runs, so the file matches what the Datatracker will render on
+submission. Do not print the site's draft page to PDF from a browser
+instead: it loses the section bookmarks, the author metadata, and the RFC
+typography. PDF support is a separate install from the rest of xml2rfc --
+Pango, then `pip install "xml2rfc[pdf]"`, then the Noto and Roboto Mono
+fonts from [xml2rfc-fonts][]; `xml2rfc --pdf-help` prints the list. The
+output is not byte-reproducible, since its XMP metadata carries a
+timestamp, so CI can't check it for staleness the way it checks the XML.
+Regenerate it whenever the draft changes.
+
+[xml2rfc-fonts]: https://github.com/ietf-tools/xml2rfc-fonts/releases/latest
 
 ## Voice
 

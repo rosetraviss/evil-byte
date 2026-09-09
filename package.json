@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build:rfcxml": "node scripts/build-rfcxml.mjs"
+    "build:rfcxml": "node scripts/build-rfcxml.mjs",
+    "build:pdf": "xml2rfc draft-traviss-evil-byte-00.xml --pdf -o draft-traviss-evil-byte-00.pdf"
   },
   "devDependencies": {
     "marked": "^16.4.2"

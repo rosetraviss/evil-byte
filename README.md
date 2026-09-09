@@ -19,6 +19,7 @@ Section 4, four other things need to agree with it by dinner.
 |---|---|
 | [`draft-traviss-evil-byte-00.md`](draft-traviss-evil-byte-00.md) | The Internet-Draft, source of truth |
 | [`draft-traviss-evil-byte-00.xml`](draft-traviss-evil-byte-00.xml) | The same, as submission-ready RFCXML v3 |
+| [`draft-traviss-evil-byte-00.pdf`](draft-traviss-evil-byte-00.pdf) | The same again, as `xml2rfc --pdf` renders it |
 | [`site/`](site) | evilbyte.net — a Cloudflare Worker: the rendered draft, a live rating gadget, the formula calculator |
 | [`era/`](era) | era.evilbyte.net — the Evil Rating Authority (Section 6): an initial rating for every allocated ASN |
 | [`telemetry/`](telemetry) | telemetry.evilbyte.net — pulls real Cloudflare traffic from Log Explorer every 15 minutes and rates it with the same formula, for validating the formula against reality |
@@ -48,8 +49,9 @@ cd evil-byte-src && pip install -e ".[dev]" && pytest
 # Go
 cd evil-byte-go && go test ./...
 
-# the RFCXML
+# the RFCXML, and the PDF from it
 npm install && npm run build:rfcxml
+npm run build:pdf          # needs `pip install "xml2rfc[pdf]"`; see CONTRIBUTING.md
 ```
 
 ## Contributing
