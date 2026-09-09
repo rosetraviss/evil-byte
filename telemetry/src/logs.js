@@ -44,6 +44,13 @@ const ISO_TIMESTAMP_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
 // the ERA and rDNS budgets in index.js, not by how many rows we read.
 const PER_ZONE_ROW_LIMIT = 5000;
 
+// Every query stops short of the present by this much. Log Explorer
+// ingests rows a little after the fact, so "this zone returned fewer
+// rows than its limit" only means "fully drained" relative to a horizon
+// that is already settled -- without one, a row arriving late for a
+// timestamp we have already passed would be skipped for good.
+const INGEST_LAG_MS = 120000;
+
 function normalizeRow(row) {
   const out = {};
   for (const [key, value] of Object.entries(row)) {
@@ -100,11 +107,12 @@ async function listZones(env) {
   return zones;
 }
 
-async function queryZoneHttpRequests(env, zone, sinceIso, limit) {
+async function queryZoneHttpRequests(env, zone, sinceIso, horizonIso, limit) {
   const sinceDate = sinceIso.slice(0, 10); // Date partition hint, narrows the scan
   const query =
     `SELECT ${COLUMNS.join(", ")} FROM http_requests ` +
     `WHERE Date >= '${sinceDate}' AND EdgeStartTimestamp >= '${sinceIso}' ` +
+    `AND EdgeStartTimestamp < '${horizonIso}' ` +
     `ORDER BY EdgeStartTimestamp ASC LIMIT ${limit}`;
 
   const url = new URL(`${API_BASE}/zones/${zone.id}/logs/explorer/query/sql`);
@@ -144,6 +152,16 @@ export async function fetchRequestLogs(env, { sinceIso, limit }) {
   }
   const perZoneLimit = Math.min(rowLimit, PER_ZONE_ROW_LIMIT);
 
+  const horizonIso = new Date(Date.now() - INGEST_LAG_MS)
+    .toISOString()
+    .replace(/\.\d+Z$/, "Z");
+  if (!ISO_TIMESTAMP_RE.test(horizonIso)) {
+    throw new Error(`Refusing to build a Log Explorer query from a malformed horizon: ${horizonIso}`);
+  }
+  if (horizonIso <= sinceIso) {
+    return { rows: [], nextCursor: sinceIso, capped: false };
+  }
+
   const zones = await listZones(env);
   for (const zone of zones) zone.pseudonym = await zonePseudonym(zone.id);
   console.log(`telemetry: found ${zones.length} zone(s): ${zones.map((z) => z.pseudonym).join(", ")}`);
@@ -152,25 +170,34 @@ export async function fetchRequestLogs(env, { sinceIso, limit }) {
   }
 
   const allRows = [];
-  let minAdvance = null;
+  let cappedAdvance = null; // min last-row timestamp across CAPPED zones only
   let capped = false;
   let unreachable = 0;
 
   for (const zone of zones) {
     let rows;
     try {
-      rows = await queryZoneHttpRequests(env, zone, sinceIso, perZoneLimit);
+      rows = await queryZoneHttpRequests(env, zone, sinceIso, horizonIso, perZoneLimit);
     } catch (err) {
       unreachable++;
       console.error(`telemetry: zone ${zone.pseudonym} query failed, skipping: ${err.message}`);
       continue;
     }
     console.log(`telemetry: zone ${zone.pseudonym}: ${rows.length} row(s)`);
-    if (rows.length === perZoneLimit) capped = true;
-    if (rows.length > 0) {
-      allRows.push(...rows);
+    if (rows.length === 0) continue;
+    allRows.push(...rows);
+
+    // A zone that came back short of its limit has been drained all the way
+    // to horizonIso, so its last row says nothing about what is still
+    // pending -- it is only the capped zones that have rows we have not
+    // read yet, and only they may hold the watermark back. Letting every
+    // zone constrain it deadlocked the pipeline: the bound below is >=, so
+    // a zone whose newest row sat exactly on the cursor returned that same
+    // row every run, pinning the watermark to its own timestamp forever.
+    if (rows.length === perZoneLimit) {
+      capped = true;
       const zoneLast = rows[rows.length - 1].edgestarttimestamp;
-      if (minAdvance === null || zoneLast < minAdvance) minAdvance = zoneLast;
+      if (cappedAdvance === null || zoneLast < cappedAdvance) cappedAdvance = zoneLast;
     }
   }
   if (unreachable > 0) {
@@ -178,5 +205,10 @@ export async function fetchRequestLogs(env, { sinceIso, limit }) {
   }
 
   allRows.sort((a, b) => (a.edgestarttimestamp < b.edgestarttimestamp ? -1 : 1));
-  return { rows: allRows, nextCursor: minAdvance === null ? sinceIso : minAdvance, capped };
+
+  // No zone capped => every zone is drained to the horizon, so that is the
+  // watermark. Otherwise fall back to the oldest capped zone, which is as
+  // far as we can advance without skipping its unread rows.
+  const nextCursor = cappedAdvance === null ? horizonIso : cappedAdvance;
+  return { rows: allRows, nextCursor, capped };
 }
