@@ -9,27 +9,30 @@
 // the results. Both this and the query method (GET, not POST — every
 // documented example is a bare `curl URL --url-query`, which is a GET by
 // curl's own default) were confirmed against the real API, not assumed.
+//
+// This account's zones are mostly unrelated to evilbyte.net — other real
+// sites sharing the account. Per explicit instruction, every zone is
+// queried (not just evilbyte.net's), but which real zone a row came from
+// is never stored or logged: only a one-way pseudonym derived from the
+// zone's Cloudflare-internal id, which isn't itself public information.
+// See zonePseudonym() below and fieldmap.js's zone_hash field.
 
 const API_BASE = "https://api.cloudflare.com/client/v4";
 
-// ZoneName is no longer requested: now that each query is already scoped
-// to one zone, we know the zone name ourselves (from listZones) and don't
-// need to gamble on whether the column is populated for this dataset.
 const COLUMNS = [
   "RayID", "EdgeStartTimestamp", "ClientIP", "ClientASN",
   "ClientCountry", "ClientRegionCode", "ClientRequestProtocol",
-  "ClientRequestHost", "BotScore", "BotScoreSrc", "JA4",
-  "WAFAttackScore", "EdgeColoCode",
+  "BotScore", "BotScoreSrc", "JA4", "WAFAttackScore", "EdgeColoCode",
 ];
 
 const ISO_TIMESTAMP_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
 
 // Per-zone cap, independent of whatever the caller's overall `limit` is —
-// with an unknown number of zones on the account, a flat per-zone bound
-// keeps one run's total work (and Cron Trigger wall time) predictable.
-// Same self-healing property as before: a capped zone just picks up where
-// it left off on the next tick, via that zone's contribution to the
-// returned cursor (see fetchRequestLogs).
+// with 35 zones on this account, a flat per-zone bound keeps one run's
+// total work (and Cron Trigger wall time) predictable. Same self-healing
+// property as before: a capped zone just picks up where it left off on
+// the next tick, via that zone's contribution to the returned cursor
+// (see fetchRequestLogs).
 const PER_ZONE_ROW_LIMIT = 1000;
 
 function normalizeRow(row) {
@@ -47,9 +50,24 @@ async function cfGet(env, url) {
   const body = await resp.json();
   if (!resp.ok || body.success === false) {
     const detail = (body.errors || []).map((e) => e.message).join("; ") || resp.statusText;
-    throw new Error(`${url.pathname} failed (${resp.status}): ${detail}`);
+    const err = new Error(`${url.pathname} failed (${resp.status}): ${detail}`);
+    err.status = resp.status;
+    throw err;
   }
   return body;
+}
+
+// One-way, unsalted SHA-256 of the zone's Cloudflare-internal id (not its
+// name) — the id isn't public/guessable the way a domain name is, so this
+// is a real pseudonym, not just a hash of already-public information.
+// Stable across runs (same zone -> same pseudonym) so the dashboard can
+// still show per-source traffic *patterns* over time without ever
+// resolving to which real site it is.
+async function zonePseudonym(zoneId) {
+  const bytes = new TextEncoder().encode(zoneId);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  const hex = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return "z-" + hex.slice(0, 10);
 }
 
 /** Every zone on the account, paginated (List Zones is capped at 50/page). */
@@ -62,7 +80,7 @@ async function listZones(env) {
     url.searchParams.set("page", String(page));
 
     const body = await cfGet(env, url);
-    for (const z of body.result || []) zones.push({ id: z.id, name: z.name });
+    for (const z of body.result || []) zones.push({ id: z.id });
 
     const totalPages = body.result_info ? body.result_info.total_pages : 1;
     if (page >= totalPages || (body.result || []).length === 0) break;
@@ -82,13 +100,19 @@ async function queryZoneHttpRequests(env, zone, sinceIso, limit) {
 
   const body = await cfGet(env, url);
   const rows = (body.result || []).map(normalizeRow);
-  for (const row of rows) row.zonename = zone.name; // authoritative; see COLUMNS comment above
+  for (const row of rows) row.zone_pseudonym = zone.pseudonym;
   return rows;
 }
 
 /**
  * Fetches new http_requests rows across every zone on the account, oldest
  * first per zone, each zone capped at PER_ZONE_ROW_LIMIT.
+ *
+ * A zone this token can't query (e.g. a permissions gap for that specific
+ * zone) is logged by pseudonym and skipped, not fatal to the run — with
+ * 35 zones on one account, one being unreachable shouldn't block the
+ * other 34. Only a failure to list zones at all is fatal (nothing to
+ * iterate without it).
  *
  * Returns { rows, nextCursor, capped }. nextCursor is the safe watermark
  * to persist: the minimum, across zones that returned any rows this run,
@@ -109,7 +133,8 @@ export async function fetchRequestLogs(env, { sinceIso, limit }) {
   const perZoneLimit = Math.min(rowLimit, PER_ZONE_ROW_LIMIT);
 
   const zones = await listZones(env);
-  console.log(`telemetry: found ${zones.length} zone(s): ${zones.map((z) => z.name).join(", ")}`);
+  for (const zone of zones) zone.pseudonym = await zonePseudonym(zone.id);
+  console.log(`telemetry: found ${zones.length} zone(s): ${zones.map((z) => z.pseudonym).join(", ")}`);
   if (zones.length === 0) {
     return { rows: [], nextCursor: sinceIso, capped: false };
   }
@@ -117,16 +142,27 @@ export async function fetchRequestLogs(env, { sinceIso, limit }) {
   const allRows = [];
   let minAdvance = null;
   let capped = false;
+  let unreachable = 0;
 
   for (const zone of zones) {
-    const rows = await queryZoneHttpRequests(env, zone, sinceIso, perZoneLimit);
-    console.log(`telemetry: zone ${zone.name} (${zone.id}): ${rows.length} row(s)`);
+    let rows;
+    try {
+      rows = await queryZoneHttpRequests(env, zone, sinceIso, perZoneLimit);
+    } catch (err) {
+      unreachable++;
+      console.error(`telemetry: zone ${zone.pseudonym} query failed, skipping: ${err.message}`);
+      continue;
+    }
+    console.log(`telemetry: zone ${zone.pseudonym}: ${rows.length} row(s)`);
     if (rows.length === perZoneLimit) capped = true;
     if (rows.length > 0) {
       allRows.push(...rows);
       const zoneLast = rows[rows.length - 1].edgestarttimestamp;
       if (minAdvance === null || zoneLast < minAdvance) minAdvance = zoneLast;
     }
+  }
+  if (unreachable > 0) {
+    console.log(`telemetry: ${unreachable} of ${zones.length} zone(s) unreachable this run (permissions?)`);
   }
 
   allRows.sort((a, b) => (a.edgestarttimestamp < b.edgestarttimestamp ? -1 : 1));

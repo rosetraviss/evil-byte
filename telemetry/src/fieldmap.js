@@ -90,7 +90,7 @@ export function computeFactors(row, { eraResult, reverseName, asFallback = false
     bot_score_src: row.botscoresrc ?? null,
     ja4: row.ja4 ?? null,
     waf_attack_score: row.wafattackscore != null ? Number(row.wafattackscore) : null,
-    zone_name: row.zonename ?? row.clientrequesthost ?? null,
+    zone_hash: row.zone_pseudonym ?? null, // pseudonymous — see logs.js's zonePseudonym()
     edge_colo_code: row.edgecolocode ?? null,
     http_protocol: row.clientrequestprotocol ?? null,
     reverse_name: reverseName ?? null,

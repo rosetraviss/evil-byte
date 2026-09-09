@@ -9,6 +9,15 @@ small dashboard at `/` shows the resulting rating distribution and compares
 it against Cloudflare's own Bot Management / WAF scores, for validating the
 formula (draft §4) against real traffic instead of synthetic test vectors.
 
+`http_requests` turned out to be zone-scoped, not queryable account-wide
+(confirmed against production — see `src/logs.js`), so this lists every
+zone on the account and queries each one separately. Most of those zones
+are real sites unrelated to evilbyte.net, sharing the same Cloudflare
+account. Which zone a row came from is never stored or logged — only a
+one-way SHA-256 hash of the zone's Cloudflare-internal id (`zone_hash`),
+stable enough to show per-source traffic patterns without identifying
+which real site it is.
+
 This is the batch counterpart to `site/`'s live `/api/rate` — see
 `src/fieldmap.js` and the table below for exactly where the two necessarily
 diverge, since a historical log row doesn't carry every signal a live
@@ -50,20 +59,17 @@ This can't be done from a coding session without your Cloudflare account
 access — these are one-time prerequisites, not something the code itself is
 missing:
 
-1. **Create a Logs-scoped API token** (read-only Logs / Log Explorer
-   permission — check the dashboard's "Create Custom Token" UI for the
-   exact permission group name) and add it as the GitHub secret
+1. **Create a Logs-scoped API token** with two permission groups: read-only
+   Logs / Log Explorer (for the SQL queries), **and** Zone / Zone / Read
+   scoped to all zones (needed just to enumerate zones via `GET /zones` —
+   confirmed required against production, since Log Explorer permission
+   alone lists zero zones). Add it as the GitHub secret
    `CLOUDFLARE_LOGS_API_TOKEN`. Kept separate from the existing
    `CLOUDFLARE_API_TOKEN` deliberately: that one can edit/delete the Worker
    and its D1 data, so a leaked Logs-read token should only ever be able to
-   read historical HTTP logs.
-2. **Confirm `http_requests` is queryable at the account level** (not just
-   per-zone) via Manage Datasets in the Cloudflare dashboard. This is the
-   single biggest unverified assumption in this pipeline — check it with
-   the smoke test below before relying on the scheduled extraction. If it
-   turns out to be zone-only, `src/logs.js` needs to loop over
-   `GET /accounts/{id}/zones` instead of issuing one account-level query —
-   a contained change to that file alone.
+   read historical HTTP logs and zone names — not modify anything.
+2. ~~Confirm `http_requests` is queryable at the account level~~ — resolved:
+   it isn't. `src/logs.js` queries every zone separately; see above.
 3. **Confirm Workers Paid is active.** The Free plan's Cron Trigger CPU
    budget (10ms) can't run this pipeline at all.
 4. **Create the D1 database once**: `wrangler d1 create evil-byte-telemetry`,
@@ -75,10 +81,10 @@ missing:
    something else.
 6. **Decide on dashboard access control.** Recommended: put a Cloudflare
    Access policy in front of `telemetry.evilbyte.net` (Zero Trust dashboard,
-   no code involved). This dashboard shows real visitor IPs and ASNs,
-   spans every zone on the account, and — per the "latest-seen upsert"
-   design — retains those IPs indefinitely, unlike `/api/rate`'s
-   transient, visitor-sees-only-their-own-data behavior.
+   no code involved). Which zone a row came from is hashed (see above), but
+   this dashboard still shows real visitor IPs and ASNs and — per the
+   "latest-seen upsert" design — retains those IPs indefinitely, unlike
+   `/api/rate`'s transient, visitor-sees-only-their-own-data behavior.
 
 ## Local dev
 
@@ -94,15 +100,23 @@ npm run dev
 
 Roughly in this order, each one settling something the next depends on:
 
-1. **Smoke-test the real API first**, before trusting `src/logs.js`:
+1. **Smoke-test the real API first**, before trusting `src/logs.js`. Zone
+   listing:
    ```bash
-   curl "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/logs/explorer/query/sql" \
-     --header "Authorization: Bearer $LOGS_API_TOKEN" \
-     --get --data-urlencode "query=SELECT * FROM http_requests LIMIT 1"
+   curl "https://api.cloudflare.com/client/v4/zones?account.id=$CF_ACCOUNT_ID" \
+     --header "Authorization: Bearer $LOGS_API_TOKEN"
    ```
-   Confirms account-level querying works at all, and the exact field casing
-   Cloudflare actually returns.
-2. **D1 locally**: `wrangler d1 execute evil-byte-telemetry --local --file=migrations/0001_init.sql`,
+   and, with one real zone id from that response, the per-zone query
+   (note `--url-query`, no `-X`/`--data` — this is a GET; every documented
+   example for this endpoint is, and it matters, see `src/logs.js`):
+   ```bash
+   curl "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/logs/explorer/query/sql" \
+     --header "Authorization: Bearer $LOGS_API_TOKEN" \
+     --url-query "query=SELECT RayID FROM http_requests LIMIT 1"
+   ```
+   Confirms both permissions on the token actually work, and the exact
+   field casing Cloudflare returns.
+2. **D1 locally**: `wrangler d1 migrations apply evil-byte-telemetry --local`,
    then hand-run an upsert twice via `wrangler d1 execute --local --command "..."`
    to confirm `times_seen` increments and `first_seen` survives while
    `last_seen` updates.

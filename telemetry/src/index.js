@@ -131,8 +131,8 @@ async function handleStats(env) {
       .all(),
     db
       .prepare(
-        `SELECT zone_name, COUNT(*) AS count FROM requestors
-         WHERE zone_name IS NOT NULL GROUP BY zone_name ORDER BY count DESC LIMIT 20`
+        `SELECT zone_hash, COUNT(*) AS count FROM requestors
+         WHERE zone_hash IS NOT NULL GROUP BY zone_hash ORDER BY count DESC LIMIT 20`
       )
       .all(),
     db.prepare("SELECT * FROM extraction_state WHERE id = 1").first(),

@@ -97,8 +97,13 @@
       return;
     }
     el.innerHTML = `
-      <thead><tr><th>Zone</th><th class="num">Requestors</th></tr></thead>
-      <tbody>${rows.map((r) => `<tr><td>${esc(r.zone_name)}</td><td class="num">${fmtNum(r.count)}</td></tr>`).join("")}</tbody>`;
+      <thead><tr><th>Source (anonymized)</th><th class="num">Requestors</th></tr></thead>
+      <tbody>${rows
+        .map(
+          (r) =>
+            `<tr><td><code title="One-way hash of the zone's Cloudflare-internal id — not the domain name.">${esc(r.zone_hash)}</code></td><td class="num">${fmtNum(r.count)}</td></tr>`
+        )
+        .join("")}</tbody>`;
   }
 
   function tile(label, value) {

@@ -86,8 +86,8 @@
 
 <section>
   <div class="wrap">
-    <h2 class="section-title">By zone</h2>
-    <p class="section-sub">By distinct-requestor count, across every zone on the account.</p>
+    <h2 class="section-title">By source</h2>
+    <p class="section-sub">By distinct-requestor count, across every zone on the account — most of which are unrelated sites sharing it with evilbyte.net. Each "source" below is a one-way hash of the zone's internal id, not its domain name; see Methodology below.</p>
     <div class="card">
       <table class="table-simple" id="zone-table"><tbody><tr><td class="empty-note">Loading…</td></tr></tbody></table>
     </div>
@@ -103,7 +103,8 @@
       <li><strong>F_name</strong> reuses a reverse-DNS answer for up to 7 days rather than looking it up fresh every time, so a requestor's name factor can lag a recent PTR change.</li>
       <li><strong>F_AS</strong> and <strong>F_name</strong> both fall back to their unrated defaults (1.0 / 1.25) when a run has too many new requestors to look all of them up in time — those rows are flagged internally and topped up on a later run.</li>
       <li>Bot Management score, WAF attack score, and JA4 are stored for comparison only and never feed the formula.</li>
-      <li>"By zone" stays empty if this Cloudflare account's Log Explorer doesn't report a zone field on account-wide queries — see telemetry/README.md.</li>
+      <li><strong>Source identity is deliberately one-way.</strong> This pipeline queries every zone on the account (http_requests turns out to be zone-scoped, not queryable account-wide), and most of those zones are real, unrelated sites — not evilbyte.net. What lands in "By source" is a SHA-256 hash of the zone's Cloudflare-internal id, truncated to 10 hex characters: stable enough to show traffic patterns per source over time, not reversible to which real site it is. Nothing else identifying a specific zone (its name, hostname) is requested, stored, or logged anywhere in this pipeline.</li>
+      <li>A zone this token can't query for logs (a permissions gap for that specific zone) is skipped for that run, not fatal to the others — see <code>src/logs.js</code>.</li>
     </ul>
   </div>
 </section>

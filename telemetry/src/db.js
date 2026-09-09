@@ -34,7 +34,7 @@ const UPSERT_SQL = `
 INSERT INTO requestors (
   client_ip, ip_version, f_as, f_net, f_tx, f_content, f_name, f_time, f_tamper,
   arriving, er, band, asn, as_rating, client_country, client_region_code,
-  bot_score, bot_score_src, ja4, waf_attack_score, zone_name, edge_colo_code,
+  bot_score, bot_score_src, ja4, waf_attack_score, zone_hash, edge_colo_code,
   http_protocol, reverse_name, f_as_is_fallback, f_name_is_fallback,
   first_seen, last_seen, last_ray_id, times_seen
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
@@ -47,7 +47,7 @@ ON CONFLICT(client_ip) DO UPDATE SET
   asn = excluded.asn, as_rating = excluded.as_rating,
   client_country = excluded.client_country, client_region_code = excluded.client_region_code,
   bot_score = excluded.bot_score, bot_score_src = excluded.bot_score_src, ja4 = excluded.ja4,
-  waf_attack_score = excluded.waf_attack_score, zone_name = excluded.zone_name,
+  waf_attack_score = excluded.waf_attack_score, zone_hash = excluded.zone_hash,
   edge_colo_code = excluded.edge_colo_code, http_protocol = excluded.http_protocol,
   reverse_name = excluded.reverse_name,
   f_as_is_fallback = excluded.f_as_is_fallback, f_name_is_fallback = excluded.f_name_is_fallback,
@@ -65,7 +65,7 @@ function bindingsFor(rec, nowIso) {
     rec.f_name, rec.f_time, rec.f_tamper, rec.arriving, rec.er, rec.band,
     rec.asn, rec.as_rating, rec.client_country, rec.client_region_code,
     rec.bot_score, rec.bot_score_src, rec.ja4, rec.waf_attack_score,
-    rec.zone_name, rec.edge_colo_code, rec.http_protocol, rec.reverse_name,
+    rec.zone_hash, rec.edge_colo_code, rec.http_protocol, rec.reverse_name,
     rec.f_as_is_fallback, rec.f_name_is_fallback,
     nowIso, nowIso, rec.last_ray_id,
   ];
