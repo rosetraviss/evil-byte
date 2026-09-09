@@ -3,9 +3,21 @@ name: Draft
 on:
   push:
     branches: [main]
-    paths: ["draft-traviss-evil-byte-00.md", "draft-traviss-evil-byte-00.xml", "scripts/build-rfcxml.mjs"]
+    paths:
+      - "draft-traviss-evil-byte-00.md"
+      - "draft-traviss-evil-byte-00.xml"
+      - "draft-traviss-evil-byte-00.pdf"
+      - "scripts/build-rfcxml.mjs"
+      - "scripts/compare-pdf-text.py"
+      - ".github/workflows/draft-ci.yml"
   pull_request:
-    paths: ["draft-traviss-evil-byte-00.md", "draft-traviss-evil-byte-00.xml", "scripts/build-rfcxml.mjs"]
+    paths:
+      - "draft-traviss-evil-byte-00.md"
+      - "draft-traviss-evil-byte-00.xml"
+      - "draft-traviss-evil-byte-00.pdf"
+      - "scripts/build-rfcxml.mjs"
+      - "scripts/compare-pdf-text.py"
+      - ".github/workflows/draft-ci.yml"
 
 jobs:
   validate:
@@ -36,3 +48,30 @@ jobs:
         run: |
           xml2rfc draft-traviss-evil-byte-00.xml --text -o /tmp/draft.txt
           xml2rfc draft-traviss-evil-byte-00.xml --html -o /tmp/draft.html
+
+      # The PDF writer is a separate code path with dependencies too heavy
+      # for a runner -- Pango, WeasyPrint, and 1.4 GB of Noto fonts -- so
+      # use the IETF's own image, which carries them. The command is the
+      # one author-tools runs.
+      - name: Render the PDF
+        run: |
+          docker run --rm -w /data \
+            -v "$PWD:/data:ro" -v "$RUNNER_TEMP:/out" \
+            ghcr.io/ietf-tools/xml2rfc-base:latest \
+            xml2rfc --pdf --out /out/rendered.pdf draft-traviss-evil-byte-00.xml
+
+      # Not `git diff --exit-code` as above: the PDF is not
+      # byte-reproducible, since its XMP metadata carries a timestamp and
+      # its line breaking moves with the xml2rfc version. Compare the words.
+      - name: Fail if the checked-in PDF is stale
+        run: |
+          pip install pypdf
+          python scripts/compare-pdf-text.py \
+            draft-traviss-evil-byte-00.pdf "$RUNNER_TEMP/rendered.pdf"
+
+      - name: Keep the render that disagreed
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rendered-pdf
+          path: ${{ runner.temp }}/rendered.pdf

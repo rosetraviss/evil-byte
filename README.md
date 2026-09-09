@@ -26,7 +26,7 @@ Section 4, four other things need to agree with it by dinner.
 | [`evil-byte-src/`](evil-byte-src) | Python reference implementation (`pip install evilbyte`), MITM, demo server/client |
 | [`evil-byte-go/`](evil-byte-go) | The same, in Go — interoperates with the Python side over the wire, not just on paper |
 | [`deploy/`](deploy) | A runbook and scripts for running the MITM across two real VPS, to see whether the octet survives the real Internet (Section 10.3) |
-| [`scripts/`](scripts) | Builds the site's rendered draft page and the RFCXML from the Markdown source |
+| [`scripts/`](scripts) | Builds the site's rendered draft page and the RFCXML from the Markdown source, and checks the PDF against it |
 
 ## Status
 
