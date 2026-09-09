@@ -15,6 +15,10 @@
     have to hand-write. Self-assessed Good, per Section 5.3.
     The many policymakers whose proposals made this document's central
     joke look reasonable by comparison.
+    xkcd, for "Dependency" <https://xkcd.com/2347/>, on what Section 6.7
+    is really describing, and for "Google Announcement"
+    <https://xkcd.com/1361/> -- dns.google's own TXT record has pointed
+    at it for years, which is the precedent Section 6.5 is following.
 
 /* SITE */
     Last update: 2026
