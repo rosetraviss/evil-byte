@@ -14,7 +14,7 @@
 // necessarily diverge (F_time and, to a lesser extent, F_name).
 
 import { fetchRequestLogs } from "./logs.js";
-import { computeFactors } from "./fieldmap.js";
+import { computeFactors, asnOf, isNonRoutableClient } from "./fieldmap.js";
 import { queryEra } from "./era-client.js";
 import { resolveReverseName } from "./rdns.js";
 import { readCursor, writeCursorAndStats, upsertRequestors } from "./db.js";
@@ -86,7 +86,17 @@ export async function runExtraction(env) {
   // only needs to apply "latest wins" once more, against whatever was
   // already stored from a previous run).
   const byIp = new Map();
-  for (const row of rows) byIp.set(row.clientip, row);
+  let dropped = 0;
+  for (const row of rows) {
+    if (isNonRoutableClient(row.clientip)) {
+      dropped++;
+      continue;
+    }
+    byIp.set(row.clientip, row);
+  }
+  if (dropped > 0) {
+    console.log(`telemetry: dropped ${dropped} row(s) with a non-routable client address`);
+  }
   const distinctRows = [...byIp.values()];
 
   const eraCache = new Map();
@@ -94,7 +104,7 @@ export async function runExtraction(env) {
   const rdnsBudget = makeBudget(RDNS_LOOKUP_BUDGET);
 
   const records = await mapWithConcurrency(distinctRows, ENRICHMENT_CONCURRENCY, async (row) => {
-    const asn = row.clientasn != null ? Number(row.clientasn) : null;
+    const asn = asnOf(row);
     let eraResult = null;
     let asFallback = false;
     if (asn != null) {

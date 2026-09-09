@@ -41,6 +41,39 @@ function isTransitionV6(ipv6) {
 }
 // --- end ported block ---
 
+/**
+ * Cloudflare's ClientASN is 0 when it could not attribute the address to
+ * an AS, not when the client announced AS0. The ERA has a deliberate
+ * entry for AS0 ("does not exist and is definitionally suspicious",
+ * multiplier 4) which is right for a real AS0 in a routing table and
+ * wrong for a failed lookup: it was handing ordinary clients the maximum
+ * AS factor, which is enough on its own to push an otherwise unremarkable
+ * IPv4 request to ER 222. Treat 0 as absent so F_AS falls back to the
+ * neutral 1.0, the same thing Appendix B.2 does with DEFAULT_AS.
+ */
+export function asnOf(row) {
+  if (row.clientasn == null) return null;
+  const n = Number(row.clientasn);
+  return Number.isInteger(n) && n > 0 ? n : null;
+}
+
+/**
+ * True for addresses that are not a requestor at all: loopback and the
+ * unspecified addresses, which show up as internal or health-check
+ * traffic Cloudflare recorded with no real client. Rating them says
+ * nothing about the formula, and 127.0.0.1 had made itself the most Evil
+ * host on the Internet. Private ranges are deliberately NOT included --
+ * CGNAT in particular is a rated class (F_net 1.75), not a reject.
+ */
+export function isNonRoutableClient(ip) {
+  if (!ip) return true;
+  let v = String(ip).trim().toLowerCase();
+  if (v.startsWith("[") && v.endsWith("]")) v = v.slice(1, -1);
+  v = v.replace(/^::ffff:/, ""); // IPv4-mapped IPv6
+  if (v === "::" || v === "::1" || v === "0.0.0.0") return true;
+  return /^127\./.test(v);
+}
+
 export function netKeyForIp(ip, isV6) {
   let netKey = isV6 ? "ipv6" : "ipv4";
   if (!isV6 && isCgnat(ip)) netKey = "ipv4-cgnat";
@@ -82,7 +115,7 @@ export function computeFactors(row, { eraResult, reverseName, asFallback = false
     ip_version: isV6 ? "IPv6" : "IPv4",
     f_as, f_net, f_tx, f_content, f_name, f_time, f_tamper,
     arriving, er, band: band(er),
-    asn: row.clientasn != null ? Number(row.clientasn) : null,
+    asn: asnOf(row),
     as_rating: eraResult ? eraResult.rating : null,
     client_country: row.clientcountry ?? null,
     client_region_code: row.clientregioncode ?? null,
