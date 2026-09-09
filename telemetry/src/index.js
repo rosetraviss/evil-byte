@@ -19,7 +19,9 @@ import { queryEra } from "./era-client.js";
 import { resolveReverseName } from "./rdns.js";
 import { readCursor, writeCursorAndStats, upsertRequestors } from "./db.js";
 
-const ROW_LIMIT_PER_RUN = 4000;
+// Upper bound on the per-zone limit (see logs.js), not on the run as a
+// whole: with 35 zones a run can legitimately pull many times this.
+const ROW_LIMIT_PER_RUN = 20000;
 const ERA_LOOKUP_BUDGET = 400;
 const RDNS_LOOKUP_BUDGET = 400;
 const ENRICHMENT_CONCURRENCY = 25;

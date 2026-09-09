@@ -33,7 +33,16 @@ const ISO_TIMESTAMP_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
 // property as before: a capped zone just picks up where it left off on
 // the next tick, via that zone's contribution to the returned cursor
 // (see fetchRequestLogs).
-const PER_ZONE_ROW_LIMIT = 1000;
+//
+// Raised from 1000: because nextCursor is the MINIMUM last-row timestamp
+// across zones, a single busy zone hitting this cap holds the whole
+// watermark back, and the run after it re-reads the same window. At 1000
+// the account's busiest zone capped every tick and the cursor fell about
+// an hour behind. Row volume costs CPU and D1 writes, both of which have
+// headroom (cpu_ms is 300000, upserts are chunked); it does NOT cost
+// subrequests, which are the actual ceiling here — those are bounded by
+// the ERA and rDNS budgets in index.js, not by how many rows we read.
+const PER_ZONE_ROW_LIMIT = 5000;
 
 function normalizeRow(row) {
   const out = {};
