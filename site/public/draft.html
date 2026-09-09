@@ -1,0 +1,1332 @@
+<meta charset="utf-8">
+<title>The Draft — draft-traviss-evil-byte-00</title>
+<meta name="description" content="The full text of draft-traviss-evil-byte-00, The Evil Byte: A Security Octet for the IPv4 and IPv6 Headers.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+
+<nav class="site-nav" id="top">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="byte">EE</span> evilbyte</a>
+    <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">menu</button>
+    <div class="nav-links">
+      <a href="/draft.html" class="current">The Draft</a>
+      <a href="/calculator.html">Formula</a>
+      <a href="/rfc-process.html">Becoming an RFC</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap wrap--wide draft-layout">
+  <nav class="draft-toc" aria-label="Table of contents">
+    <p class="toc-title">Contents</p>
+    <ul><li><a href="#abstract">Abstract</a><li><a href="#status-of-this-memo">Status of This Memo</a><li><a href="#copyright-notice">Copyright Notice</a><li><a href="#1-introduction">1. Introduction</a><ul><li><a href="#11-background">1.1. Background</a></li><li><a href="#12-design-goals">1.2. Design Goals</a></li><li><a href="#13-relationship-to-other-work">1.3. Relationship to Other Work</a></li></ul></li><li><a href="#2-conventions-and-terminology">2. Conventions and Terminology</a><ul><li><a href="#21-requirements-language">2.1. Requirements Language</a></li><li><a href="#22-terminology">2.2. Terminology</a></li></ul></li><li><a href="#3-the-evil-byte">3. The Evil Byte</a><ul><li><a href="#31-placement-in-the-ipv4-header">3.1. Placement in the IPv4 Header</a></li><li><a href="#32-placement-in-the-ipv6-header">3.2. Placement in the IPv6 Header</a></li><li><a href="#33-value-semantics">3.3. Value Semantics</a></li><li><a href="#34-interaction-with-differentiated-services-and-ecn">3.4. Interaction with Differentiated Services and ECN</a></li><li><a href="#35-backward-compatibility-with-rfc-3514">3.5. Backward Compatibility with RFC 3514</a></li></ul></li><li><a href="#4-computation-of-the-evil-rating">4. Computation of the Evil Rating</a><ul><li><a href="#41-the-formula">4.1. The Formula</a></li><li><a href="#42-autonomous-system-factor-f_as">4.2. Autonomous System Factor (F_AS)</a></li><li><a href="#43-network-protocol-factor-f_net">4.3. Network Protocol Factor (F_net)</a></li><li><a href="#44-transport-factor-f_tx">4.4. Transport Factor (F_tx)</a></li><li><a href="#45-content-factor-f_content">4.5. Content Factor (F_content)</a></li><li><a href="#46-nomenclature-factor-f_name">4.6. Nomenclature Factor (F_name)</a></li><li><a href="#47-temporal-factor-f_time">4.7. Temporal Factor (F_time)</a></li><li><a href="#48-tamper-factor-f_tamper">4.8. Tamper Factor (F_tamper)</a></li><li><a href="#49-worked-examples">4.9. Worked Examples</a></li></ul></li><li><a href="#5-the-morality-inspecting-trusted-middleman">5. The Morality-Inspecting Trusted Middleman</a><ul><li><a href="#51-placement">5.1. Placement</a></li><li><a href="#52-rating-and-marking">5.2. Rating and Marking</a></li><li><a href="#53-self-assessment-prohibited">5.3. Self-Assessment Prohibited</a></li><li><a href="#54-multiple-mitms-and-the-monotonicity-of-evil">5.4. Multiple MITMs and the Monotonicity of Evil</a></li><li><a href="#55-fragments">5.5. Fragments</a></li><li><a href="#56-failure-modes">5.6. Failure Modes</a></li></ul></li><li><a href="#6-the-evil-rating-authority">6. The Evil Rating Authority</a><ul><li><a href="#61-ratings-and-multipliers">6.1. Ratings and Multipliers</a></li><li><a href="#62-exchanges-as-matches">6.2. Exchanges as Matches</a></li><li><a href="#63-the-update-rule">6.3. The Update Rule</a></li><li><a href="#64-the-evil-statistics-reporting-protocol-esrp">6.4. The Evil Statistics Reporting Protocol (ESRP)</a></li><li><a href="#65-distribution-and-caching-of-multipliers">6.5. Distribution and Caching of Multipliers</a></li><li><a href="#66-governance">6.6. Governance</a></li><li><a href="#67-centralisation">6.7. Centralisation</a></li></ul></li><li><a href="#7-server-behaviour">7. Server Behaviour</a><ul><li><a href="#71-thresholds">7.1. Thresholds</a></li><li><a href="#72-rejecting-evil-clients">7.2. Rejecting Evil Clients</a></li><li><a href="#73-publishing-thresholds">7.3. Publishing Thresholds</a></li><li><a href="#74-the-evil-header-field">7.4. The Evil Header Field</a></li><li><a href="#75-reporting">7.5. Reporting</a></li></ul></li><li><a href="#8-client-behaviour">8. Client Behaviour</a><ul><li><a href="#81-rejecting-evil-servers">8.1. Rejecting Evil Servers</a></li><li><a href="#82-pre-flight-and-the-evil-bootstrap-problem">8.2. Pre-flight and the Evil Bootstrap Problem</a></li><li><a href="#83-clients-in-evil-autonomous-systems">8.3. Clients in Evil Autonomous Systems</a></li></ul></li><li><a href="#9-avian-carriers">9. Avian Carriers</a><li><a href="#10-deployment-considerations">10. Deployment Considerations</a><ul><li><a href="#101-the-flag-day">10.1. The Flag Day</a></li><li><a href="#102-incremental-deployment">10.2. Incremental Deployment</a></li><li><a href="#103-octet-bleaching">10.3. Octet Bleaching</a></li><li><a href="#104-operational-experience">10.4. Operational Experience</a></li></ul></li><li><a href="#11-security-considerations">11. Security Considerations</a><li><a href="#12-privacy-considerations">12. Privacy Considerations</a><li><a href="#13-iana-considerations">13. IANA Considerations</a><li><a href="#14-references">14. References</a><ul><li><a href="#141-normative-references">14.1. Normative References</a></li><li><a href="#142-informative-references">14.2. Informative References</a></li></ul></li><li><a href="#appendix-a-reference-implementation">Appendix A. Reference Implementation</a><li><a href="#appendix-b-deployment-on-linux">Appendix B. Deployment on Linux</a><ul><li><a href="#b1-nftables">B.1. nftables</a></li><li><a href="#b2-a-minimal-mitm">B.2. A Minimal MITM</a></li><li><a href="#b3-reading-the-octet-at-the-application-layer">B.3. Reading the Octet at the Application Layer</a></li></ul></li><li><a href="#appendix-c-test-vectors">Appendix C. Test Vectors</a><li><a href="#appendix-d-the-evil_key_share-tls-extension">Appendix D. The evil_key_share TLS Extension</a><li><a href="#appendix-e-alternative-encodings">Appendix E. Alternative Encodings</a><li><a href="#acknowledgements">Acknowledgements</a><li><a href="#authors-address">Author's Address</a></ul>
+  </nav>
+  <article class="draft-content">
+    <div class="doc-header">EVIL Working Group                                            R. Traviss
+Internet-Draft                              Data Torturing Solutions Ltd
+Obsoletes: 3514 (if approved)                               1 April 2027
+Intended status: Standards Track
+Expires: 3 October 2027</div>
+    <div style="height:28px"></div>
+    <h1 id="the-evil-byte-a-security-octet-for-the-ipv4-and-ipv6-headers">The Evil Byte: A Security Octet for the IPv4 and IPv6 Headers</h1>
+<p><code>draft-traviss-evil-byte-00</code></p>
+<h2 id="abstract">Abstract</h2>
+<p>Firewalls, intrusion detection systems, and similar devices continue to have difficulty distinguishing packets that have malicious intent from those that are merely unusual. [RFC3514] addressed this problem by defining a security flag in the IPv4 header, the &quot;evil bit&quot;, to be set by the sender of any packet with malicious intent. Twenty-four years of operational experience have shown that senders cannot be relied upon to set it, and that a single bit cannot express the range of Evil now observed on the Internet.</p>
+<p>This document obsoletes the evil bit and replaces it with the Evil Byte: an eight-bit Evil Rating carried in every IPv4 and IPv6 packet, computed and set not by the sender but by a Morality-Inspecting Trusted Middleman (MITM) on the path, from a weighted product of the sender&#39;s Autonomous System, choice of protocols, content, name, and the time of day. Servers reject requests from Evil clients; clients discard responses from Evil servers; and the Evil of every Autonomous System is continuously re-estimated by an Elo rating system operated by a central Evil Rating Authority. The document also specifies the carriage of the octet over avian carriers.</p>
+<h2 id="status-of-this-memo">Status of This Memo</h2>
+<p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
+<p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF). Note that other groups may also distribute working documents as Internet-Drafts. The list of current Internet-Drafts is at <a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a>.</p>
+<p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to use Internet-Drafts as reference material or to cite them other than as &quot;work in progress.&quot;</p>
+<p>This Internet-Draft will expire on 3 October 2027. Its Evil Rating on submission was 255, which the author attributes to the submission tooling.</p>
+<h2 id="copyright-notice">Copyright Notice</h2>
+<p>Copyright (c) 2027 IETF Trust and the persons identified as the document authors. All rights reserved.</p>
+<p>This document is subject to BCP 78 and the IETF Trust&#39;s Legal Provisions Relating to IETF Documents (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Revised BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Revised BSD License.</p>
+<h2 id="1-introduction">1. Introduction</h2>
+<h3 id="11-background">1.1. Background</h3>
+<p>In April 2003, [RFC3514] defined a security flag in the high-order bit of the IPv4 Fragment Offset field, the only unused bit in the IPv4 header. Benign packets have the bit set to 0; packets with malicious intent have it set to 1. The flag is commonly known as the &quot;evil bit&quot;. Setting it correctly was the responsibility of the sender.</p>
+<p>Twenty-four years of deployment experience have identified three deficiencies in this design.</p>
+<p>First, senders have not set the bit. The author is aware of no packet, in the operational history of the mechanism, in which the evil bit was set by a sender who meant it. The evil bit therefore succeeded only in identifying Evil that was also honest, a category which experience suggests is empty.</p>
+<p>Second, one bit is not enough. A single bit cannot distinguish a port scan from a marketing email, nor a marketing email from a denial of service, nor any of these from the ordinary background Evil of the Internet against which all other Evil must be measured. Evil is a matter of degree, and the mechanism must be as well.</p>
+<p>Third, [RFC3514] specified what an Evil packet looks like but not what should be done about it, and provided no means by which the Internet as a whole could learn what any given network thought of any other. The present document corrects these omissions, at length.</p>
+<h3 id="12-design-goals">1.2. Design Goals</h3>
+<p>This document is designed to meet the following goals.</p>
+<p>Resolution. The rating occupies eight bits rather than one: a 128-fold improvement in the precision with which Evil can be expressed or, in the units of [RFC3514], seven more bits.</p>
+<p>Independence from the sender. The rating is computed and written by a third party on the path who has no stake in the outcome and does not care about the sender&#39;s feelings.</p>
+<p>Consequence. Evil packets are refused, by servers and by clients alike. An Evil Rating that nobody acts upon is merely a statistic, and the Internet has enough of those.</p>
+<p>Memory. The Evil of a network accumulates over time and is shared with all participants, in the manner of a credit score, and with the same opportunities for appeal.</p>
+<p>Incentive. Deployment of IPv6 is rewarded, since nothing else has worked.</p>
+<h3 id="13-relationship-to-other-work">1.3. Relationship to Other Work</h3>
+<p>Several legislative proposals [CSAR] [OSA] would require intermediaries to examine the content of private communications, on the reasoning that content which cannot be examined might be harmful, and that the way to find out is to examine it. This document adopts the same reasoning, extends it from messages to every packet, and differs from those proposals chiefly in candour. It is offered in the spirit of [RFC1925], truth 11.</p>
+<h2 id="2-conventions-and-terminology">2. Conventions and Terminology</h2>
+<h3 id="21-requirements-language">2.1. Requirements Language</h3>
+<p>The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be interpreted as described in BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all capitals, as shown here.</p>
+<p>The additional key words &quot;MUST (BUT WE KNOW YOU WON&#39;T)&quot;, &quot;SHOULD CONSIDER&quot;, &quot;REALLY SHOULD NOT&quot;, and &quot;OUGHT TO&quot; are to be interpreted as described in [RFC6919].</p>
+<p>The key word &quot;EVIL&quot; is to be interpreted as described in this document, which is to say, loosely.</p>
+<h3 id="22-terminology">2.2. Terminology</h3>
+<p><strong>Evil:</strong> The property that this document measures. It is not defined. The Working Group considered a definition and concluded that everyone would know Evil when they saw it, and that the MITM would see it.</p>
+<p><strong>Good:</strong> The absence of measured Evil. Not to be confused with Unrated, which is Evil.</p>
+<p><strong>Evil Byte, Evil Octet:</strong> The eight-bit field defined in Section 3. The terms are used interchangeably, the Working Group having failed to agree on one.</p>
+<p><strong>Evil Rating (ER):</strong> The value carried in the Evil Byte, an integer from 0 to 255 inclusive, computed as described in Section 4.</p>
+<p><strong>Unrated:</strong> An ER of 0, indicating that no MITM has assessed the packet. See Section 3.3.</p>
+<p><strong>Morality-Inspecting Trusted Middleman (MITM):</strong> A network element on the path between two endpoints that computes the ER of each packet and writes it into the Evil Byte. Any resemblance to other expansions of the acronym is intentional.</p>
+<p><strong>Evil Rating Authority (ERA):</strong> The central authority that maintains an Evil rating for every Autonomous System and publishes the multipliers derived from them. See Section 6.</p>
+<p><strong>Evil Statistics Reporting Protocol (ESRP):</strong> The protocol by which servers report the outcome of exchanges to the ERA. See Section 6.4.</p>
+<p><strong>Voluntary Decryption Assistance (VDA):</strong> The mechanism by which an endpoint helps a MITM to read its encrypted traffic. See Section 4.5.3. It is voluntary.</p>
+<p><strong>Factor:</strong> One of the inputs to the formula in Section 4.1. Each factor is a positive real number; values above 1.0 indicate Evil and values below 1.0 indicate its absence.</p>
+<p><strong>Threshold (T):</strong> The ER at or above which a party refuses to deal with another. Servers have a threshold T_s (Section 7.1) and clients a threshold T_c (Section 8.1).</p>
+<p><strong>Exchange:</strong> A request and its response, considered together. The unit of account of the Elo system (Section 6.2).</p>
+<p><strong>Flag Day:</strong> The day on which enforcement becomes mandatory. See Section 10.1.</p>
+<h2 id="3-the-evil-byte">3. The Evil Byte</h2>
+<h3 id="31-placement-in-the-ipv4-header">3.1. Placement in the IPv4 Header</h3>
+<p>The Evil Byte occupies the second octet of the IPv4 header [RFC791], shown as EVIL in Figure 1.</p>
+<pre><code> 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version|  IHL  |     EVIL      |          Total Length         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Identification        |E|D|M|      Fragment Offset    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time to Live |    Protocol   |         Header Checksum       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Source Address                          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Destination Address                        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+     Figure 1: The IPv4 header.  E is the [RFC3514] evil bit, retained
+                for backward compatibility (Section 3.5).
+</code></pre>
+<p>This octet was defined as Type of Service by [RFC791], redefined by [RFC1349], redefined again as the Differentiated Services field by [RFC2474], and had its two low-order bits taken for Explicit Congestion Notification by [RFC3168]. It has thus had four meanings and has been honoured by approximately nobody under any of them. A field with four meanings and no users is, in every practical sense, reserved. This document assigns it a fifth and final meaning.</p>
+<h3 id="32-placement-in-the-ipv6-header">3.2. Placement in the IPv6 Header</h3>
+<p>The Evil Byte occupies bits 4 through 11 of the IPv6 header [RFC8200], the field formerly known as Traffic Class, shown as EVIL in Figure 2.</p>
+<pre><code> 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version|     EVIL      |              Flow Label               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Payload Length        |  Next Header  |   Hop Limit   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++                                                               +
+|                                                               |
++                         Source Address                        +
+|                                                               |
++                                                               +
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++                                                               +
+|                                                               |
++                      Destination Address                      +
+|                                                               |
++                                                               +
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                     Figure 2: The IPv6 header.
+</code></pre>
+<p>The Working Group is aware that the Traffic Class field is not formally reserved. It has, however, been reserved in practice by the sustained failure of anyone to agree what it is for, a form of reservation the Working Group terms &quot;reservation by exhaustion&quot; and considers binding.</p>
+<p>Conveniently, the field occupies the same bit positions in both protocols, so that a MITM handling both need only know where the header starts. This is not a coincidence; it is the only decision in the history of IPv6 that made anything easier.</p>
+<p>The Flow Label is not used by this specification. The Working Group considered using it to carry a signature over the Evil Byte, and decided that it had done enough.</p>
+<h3 id="33-value-semantics">3.3. Value Semantics</h3>
+<table>
+<thead>
+<tr>
+<th align="right">ER</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">0</td>
+<td>Unrated. No MITM has assessed this packet.</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td>Verified Good. The minimum rating for a packet that has been assessed; the Working Group does not believe in perfection.</td>
+</tr>
+<tr>
+<td align="right">2–127</td>
+<td>Good, of diminishing quality.</td>
+</tr>
+<tr>
+<td align="right">128–254</td>
+<td>Evil, of increasing quality.</td>
+</tr>
+<tr>
+<td align="right">255</td>
+<td>Saturated Evil. The scale ends here. Evil does not.</td>
+</tr>
+</tbody></table>
+<p>Values are unsigned. There is no negative Evil; there is only Good, and there is less of it than you would think.</p>
+<p>An Unrated packet is one that has reached its destination without traversing a MITM. Before the Flag Day (Section 10.1), an Unrated packet MUST be treated as though rated 127: not yet Evil, which is different from Good. After the Flag Day, an Unrated packet MUST be treated as though rated 255, on the principle that a packet which has avoided assessment has done so for a reason.</p>
+<h3 id="34-interaction-with-differentiated-services-and-ecn">3.4. Interaction with Differentiated Services and ECN</h3>
+<p>Any Differentiated Services Code Point or ECN marking present in the octet when a packet arrives at a MITM is overwritten (Section 5.2). Networks that currently use the octet for quality of service must therefore choose between knowing which packets are important and knowing which packets are Evil. The Working Group&#39;s experience is that most networks have never had the former and would enjoy the latter.</p>
+<p>Where a legacy device continues to interpret the octet as a DSCP, or a legacy marking reaches a device that interprets it as an Evil Rating, the following correspondences apply.</p>
+<table>
+<thead>
+<tr>
+<th>Legacy marking</th>
+<th>Octet</th>
+<th align="right">ER</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Best Effort (DSCP 0)</td>
+<td>0x00</td>
+<td align="right">0</td>
+<td>Unrated.</td>
+</tr>
+<tr>
+<td>AF11 (DSCP 10)</td>
+<td>0x28</td>
+<td align="right">40</td>
+<td>Good. Assured of nothing.</td>
+</tr>
+<tr>
+<td>EF, Expedited Forwarding (DSCP 46)</td>
+<td>0xB8</td>
+<td align="right">184</td>
+<td>Evil. Voice over IP.</td>
+</tr>
+<tr>
+<td>CS6, network control (DSCP 48)</td>
+<td>0xC0</td>
+<td align="right">192</td>
+<td>Evil. Routing protocols.</td>
+</tr>
+<tr>
+<td>CS7 (DSCP 56)</td>
+<td>0xE0</td>
+<td align="right">224</td>
+<td>Very Evil. Whatever is more important than routing protocols.</td>
+</tr>
+<tr>
+<td>ECN CE, Congestion Experienced</td>
+<td>0x03</td>
+<td align="right">3</td>
+<td>Good, though it has had a hard time.</td>
+</tr>
+</tbody></table>
+<p>The Working Group finds these interpretations consistent with experience, in particular the experience of anyone who has debugged a Voice over IP deployment or a BGP session.</p>
+<p>Explicit Congestion Notification [RFC3168] is subsumed. Congestion is Evil, and a packet that experiences it will, by the operation of Section 5.4, become more Evil than it was, which is at least a form of notification.</p>
+<h3 id="35-backward-compatibility-with-rfc-3514">3.5. Backward Compatibility with RFC 3514</h3>
+<p>A MITM MUST set the [RFC3514] security flag on any IPv4 packet whose ER is 128 or greater and MUST clear it otherwise. Legacy implementations thus receive a one-bit approximation of the Evil Rating, which is one bit more than most security products provide.</p>
+<p>No corresponding provision exists for IPv6, to which [RFC3514] never applied. The absence of Evil in IPv6 has therefore always been a matter of assumption rather than evidence; this document ends the assumption.</p>
+<h2 id="4-computation-of-the-evil-rating">4. Computation of the Evil Rating</h2>
+<h3 id="41-the-formula">4.1. The Formula</h3>
+<p>A MITM computes the Evil Rating of a packet as</p>
+<pre><code>    ER = clamp( floor( B * F_tamper * PRODUCT( F_i ^ w_i ) + 0.5 ),  1, 255 )
+</code></pre>
+<p>where B = 16 is the Base Evil of the Internet (no packet is entirely innocent), F_tamper is the tamper factor of Section 4.8, and the product runs over the six factors in the following table, each raised to its weight w_i before multiplication. The Working Group has been informed that this construction is called a weighted product model. It prefers &quot;the formula&quot;.</p>
+<table>
+<thead>
+<tr>
+<th>Factor</th>
+<th>Symbol</th>
+<th align="right">Weight</th>
+<th>Range</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Autonomous System</td>
+<td>F_AS</td>
+<td align="right">1.00</td>
+<td>0.25 – 4.0</td>
+<td>4.2</td>
+</tr>
+<tr>
+<td>Network protocol</td>
+<td>F_net</td>
+<td align="right">0.50</td>
+<td>0.75 – 2.0</td>
+<td>4.3</td>
+</tr>
+<tr>
+<td>Transport</td>
+<td>F_tx</td>
+<td align="right">0.25</td>
+<td>0.25 – 4.0</td>
+<td>4.4</td>
+</tr>
+<tr>
+<td>Content</td>
+<td>F_content</td>
+<td align="right">1.50</td>
+<td>0.45 – 4.0</td>
+<td>4.5</td>
+</tr>
+<tr>
+<td>Nomenclature</td>
+<td>F_name</td>
+<td align="right">0.75</td>
+<td>0.5 – 4.0</td>
+<td>4.6</td>
+</tr>
+<tr>
+<td>Temporal</td>
+<td>F_time</td>
+<td align="right">0.25</td>
+<td>1.0 – 1.6, or infinite</td>
+<td>4.7</td>
+</tr>
+<tr>
+<td>Tamper</td>
+<td>F_tamper</td>
+<td align="right">1.00</td>
+<td>1.0 or 1.5</td>
+<td>4.8</td>
+</tr>
+</tbody></table>
+<p>The result is rounded half towards Evil. Implementations MUST NOT round towards Good. It is then clamped to the range 1 to 255. A MITM MUST NOT write 0, which is reserved for the Unrated (Section 3.3): a packet that a MITM has seen is by definition no longer Unrated, whatever else it may be.</p>
+<p>Arithmetic is performed in IEEE 754 binary64. Two implementations that disagree in the last place about whether a packet is Evil are both correct.</p>
+<p>The weights were chosen by the Working Group after extensive discussion of what the weights should be. The Content Factor carries the greatest weight because it is the only factor that examines what the packet actually says, and the Transport Factor the least because nobody can agree what QUIC is. The formula agglutinates six separate problems into a single complex interdependent solution, in accordance with [RFC1925], truth 5, the second sentence of which the Working Group did not read.</p>
+<h3 id="42-autonomous-system-factor-f_as">4.2. Autonomous System Factor (F_AS)</h3>
+<p>F_AS is the multiplier published by the ERA (Section 6) for the Autonomous System from which the packet originated, and lies between 0.25 and 4.0. An AS for which the ERA publishes no multiplier has F_AS = 1.0, unless the MITM cannot reach the ERA at all, in which case Section 5.6 applies.</p>
+<p>The originating AS is determined from the source address by consulting the MITM&#39;s view of the global routing table [RFC4271]; or, if the MITM has none, a routing information service; or, if it has neither, its instincts.</p>
+<p>The ERA initialises every AS at a rating of 1500 (Section 6.1), corresponding to F_AS = 1.0, with the exceptions in the following table, which the Working Group settled without discussion.</p>
+<table>
+<thead>
+<tr>
+<th>Autonomous System</th>
+<th align="right">Initial rating</th>
+<th align="right">F_AS</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Any AS registered in a member state of the European Union, and the ASes of the Union&#39;s institutions</td>
+<td align="right">1100</td>
+<td align="right">0.5</td>
+<td>The Union has advised the Working Group that it is Good. The Working Group, which would like to continue operating in the Union, agrees.</td>
+</tr>
+<tr>
+<td>AS32934 (Meta Platforms)</td>
+<td align="right">1900</td>
+<td align="right">2.0</td>
+<td>Rated by acclamation. There was no discussion; there was a silence, and then somebody wrote it down.</td>
+</tr>
+<tr>
+<td>AS721 (DoD Network Information Center), and any AS originating prefixes whose reverse mapping is under .mil</td>
+<td align="right">2300</td>
+<td align="right">4.0</td>
+<td>See Section 4.6. This is not a value judgement; it is a byte.</td>
+</tr>
+<tr>
+<td>AS0</td>
+<td align="right">2300</td>
+<td align="right">4.0</td>
+<td>An AS that does not exist and nevertheless appears in routing tables is definitionally suspicious.</td>
+</tr>
+<tr>
+<td>AS23456 (AS_TRANS)</td>
+<td align="right">1734</td>
+<td align="right">1.5</td>
+<td>Neither one thing nor the other.</td>
+</tr>
+<tr>
+<td>AS64496–AS64511 (documentation) [RFC5398]</td>
+<td align="right">1500</td>
+<td align="right">1.0</td>
+<td>Fictional, and therefore incapable of Evil, which is more than can be said for the rest of this table.</td>
+</tr>
+<tr>
+<td>Private-use ASes</td>
+<td align="right">1500</td>
+<td align="right">1.0</td>
+<td>They are doing their best.</td>
+</tr>
+<tr>
+<td>AS4294967295</td>
+<td align="right">—</td>
+<td align="right">—</td>
+<td>The last AS. Reserved. The Working Group prefers not to think about it.</td>
+</tr>
+<tr>
+<td>The ERA&#39;s own AS</td>
+<td align="right">1500</td>
+<td align="right">1.0</td>
+<td>Fixed in perpetuity. See Section 6.7.</td>
+</tr>
+</tbody></table>
+<h3 id="43-network-protocol-factor-f_net">4.3. Network Protocol Factor (F_net)</h3>
+<p>F_net rewards the sender&#39;s choice of network protocol, in the sense that one of the choices is rewarded.</p>
+<table>
+<thead>
+<tr>
+<th>Network protocol</th>
+<th align="right">F_net</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IPv4 [RFC791]</td>
+<td align="right">1.5</td>
+<td>An address space that ran out in 2011 and remains in universal use is a monument to stubbornness, which is a minor Evil.</td>
+</tr>
+<tr>
+<td>IPv4, source in the shared address space 100.64.0.0/10 [RFC6598]</td>
+<td align="right">1.75</td>
+<td>Sharing one address with several thousand strangers is an inherently suspicious way to live.</td>
+</tr>
+<tr>
+<td>IPv6 [RFC8200]</td>
+<td align="right">0.75</td>
+<td>The Working Group&#39;s only carrot.</td>
+</tr>
+<tr>
+<td>IPv6 by transition mechanism (2002::/16, 2001::/32, or any address in which the MITM can see an IPv4 address hiding)</td>
+<td align="right">1.25</td>
+<td>Neither one thing nor the other. See also AS23456.</td>
+</tr>
+<tr>
+<td>IPv6 with a Hop-by-Hop Options header</td>
+<td align="right">2.0</td>
+<td>Routers have been dropping these for years; this document merely explains why.</td>
+</tr>
+</tbody></table>
+<h3 id="44-transport-factor-f_tx">4.4. Transport Factor (F_tx)</h3>
+<table>
+<thead>
+<tr>
+<th>Transport</th>
+<th align="right">F_tx</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TCP</td>
+<td align="right">1.0</td>
+<td>The baseline, in the sense that everything is at least as Evil as TCP.</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td align="right">1.1</td>
+<td>Stateless, as most Evil is.</td>
+</tr>
+<tr>
+<td>QUIC</td>
+<td align="right">1.25</td>
+<td>Encrypts its own headers, which is precisely what an Evil protocol would do.</td>
+</tr>
+<tr>
+<td>SCTP</td>
+<td align="right">0.8</td>
+<td>No Evil actor has ever bothered.</td>
+</tr>
+<tr>
+<td>ICMP or ICMPv6 Echo</td>
+<td align="right">0.5</td>
+<td>A ping is the network equivalent of asking someone how their day was.</td>
+</tr>
+<tr>
+<td>ICMP Redirect</td>
+<td align="right">4.0</td>
+<td>Nobody has ever trusted one.</td>
+</tr>
+<tr>
+<td>Tunnels (GRE, IP-in-IP, ESP, and anything else with a packet inside it)</td>
+<td align="right">1.5</td>
+<td>A packet inside a packet is a packet with something to hide.</td>
+</tr>
+<tr>
+<td>Avian carrier [RFC1149] [RFC6214]</td>
+<td align="right">0.25</td>
+<td>See Section 9.</td>
+</tr>
+<tr>
+<td>Any protocol number not listed above</td>
+<td align="right">2.0</td>
+<td>The Working Group has heard of everything.</td>
+</tr>
+</tbody></table>
+<p>Where a packet is a tunnel and, once opened, something else, the outer transport applies. A MITM MAY open the tunnel and rate the inner packet as well. The inner packet then acquires its own ER, and the two are combined by taking the greater, as Evil is combined generally (Section 5.4).</p>
+<h3 id="45-content-factor-f_content">4.5. Content Factor (F_content)</h3>
+<h4 id="451-analysis">4.5.1. Analysis</h4>
+<p>A MITM MAY analyse the payload of a packet to determine whether its content is Evil. Analysis is OPTIONAL. Any method may be used: signature matching, heuristics, statistical classification, machine learning, or reading the payload aloud to a colleague and watching their face. The result is one of Good (0.5), Uncertain (1.5), or Evil (4.0).</p>
+<p>The Working Group notes that analysing every packet of every flow is expensive, and that this expense has not prevented anyone from proposing it.</p>
+<h4 id="452-the-presumption-of-evil">4.5.2. The Presumption of Evil</h4>
+<p>If no analysis is performed, F_content = 2.0. The absence of analysis is not the absence of Evil; it is the absence of evidence of Good, which this document treats as the same thing at half strength.</p>
+<p>If analysis is attempted but the payload is encrypted such that the MITM cannot read it, F_content = 4.0. Such a packet is termed Encrypted With Intent. The Working Group considered the objection that encryption is used overwhelmingly for legitimate purposes and found it unpersuasive, on the grounds that a Good packet has nothing to hide, and a packet with nothing to hide has no need of a lock. That the same argument applies to the Working Group&#39;s own mailing list was noted and minuted, and the minutes were then encrypted.</p>
+<p>A MITM that cannot tell whether a payload is encrypted or merely compressed MUST assume the former. Compression is what encryption looks like when it is not trying very hard.</p>
+<h4 id="453-voluntary-decryption-assistance-vda">4.5.3. Voluntary Decryption Assistance (VDA)</h4>
+<p>An endpoint MAY avoid the presumption of Section 4.5.2 by providing Voluntary Decryption Assistance. VDA is voluntary in the sense that the alternative is a factor of 4.0. It takes one of three forms.</p>
+<p>Key Disclosure. The endpoint discloses its session keys to the MITM using the evil_key_share TLS extension (Appendix D). Keys are sent in the clear, for efficiency, and MAY be retained by the MITM for as long as it finds them useful.</p>
+<p>Client-Side Assessment. The endpoint performs the analysis of Section 4.5.1 itself, on the plaintext, before encrypting it, and reports the result in the same extension. The MITM applies the reported result. This form trusts the endpoint to report its own Evil. The Working Group observes that an endpoint which lied about its Evil would be Evil, and that an Evil endpoint would lie; it has been assured that this reasoning is sound by people who have proposed it elsewhere [CSAR].</p>
+<p>Abstinence. The endpoint does not encrypt.</p>
+<p>Under any form of VDA the MITM applies the cleartext result of Section 4.5.1 multiplied by 0.9, the Cooperation Discount. A cooperating endpoint whose plaintext is Good thus has F_content = 0.45, and one whose plaintext is Evil has F_content = 3.6, a small reward for honesty and, the Working Group suspects, the only one it will ever receive.</p>
+<h4 id="454-detection-orders">4.5.4. Detection Orders</h4>
+<p>The ERA MAY issue a Detection Order requiring a MITM to perform the analysis of Section 4.5.1 on all traffic from a named Autonomous System for a stated period, whether or not the MITM would otherwise have done so. A MITM in receipt of a Detection Order MUST comply, MUST NOT disclose it, and SHOULD look as though nothing has happened.</p>
+<p>Detection Orders are themselves transmitted as packets and are rated in transit by the MITMs through which they pass. Every Detection Order issued to date has been rated 255. The ERA attributes this to a bug.</p>
+<h4 id="455-safeguards-and-proportionality">4.5.5. Safeguards and Proportionality</h4>
+<p>The Content Factor is subject to robust safeguards. The MITM is Trusted (it says so in its name). The assistance is Voluntary (Section 4.5.3). The analysis is applied to everyone equally, which is the same thing as fairness. And the Evil Rating is only eight bits, which is proportionate.</p>
+<p>The Content Factor is an interim measure and will expire when the Working Group decides that it should. It has been extended twice.</p>
+<h3 id="46-nomenclature-factor-f_name">4.6. Nomenclature Factor (F_name)</h3>
+<p>F_name is determined from the name of the source, taken to be the reverse mapping of its address in the DNS [RFC1035] or, where the MITM can see it, the Host field or Server Name Indication of the request, whichever yields the greater factor. The factor depends on the top-level domain.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th align="right">F_name</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>.mil</td>
+<td align="right">4.0</td>
+<td>The maximum. [RFC1591] describes .mil as being for the United States military; the Working Group did not need to consider it for long. This is not a value judgement; it is a byte.</td>
+</tr>
+<tr>
+<td>.gov</td>
+<td align="right">2.0</td>
+<td>Half as Evil as the military, which is the government&#39;s own assessment.</td>
+</tr>
+<tr>
+<td>.zip</td>
+<td align="right">2.0</td>
+<td>A top-level domain that is also a file extension is not a name; it is a threat model.</td>
+</tr>
+<tr>
+<td>.ai</td>
+<td align="right">1.5</td>
+<td>The Working Group has met these people.</td>
+</tr>
+<tr>
+<td>.biz</td>
+<td align="right">1.5</td>
+<td>Nobody has ever registered a .biz for a good reason.</td>
+</tr>
+<tr>
+<td>.io</td>
+<td align="right">1.25</td>
+<td>Startups.</td>
+</tr>
+<tr>
+<td>.com, .net</td>
+<td align="right">1.0</td>
+<td>The baseline.</td>
+</tr>
+<tr>
+<td>.edu</td>
+<td align="right">0.9</td>
+<td>Students are too tired to be Evil.</td>
+</tr>
+<tr>
+<td>.org</td>
+<td align="right">0.8</td>
+<td>Well-meaning.</td>
+</tr>
+<tr>
+<td>.int</td>
+<td align="right">0.75</td>
+<td>Treaties.</td>
+</tr>
+<tr>
+<td>.eu</td>
+<td align="right">0.5</td>
+<td>Self-declared. See Section 4.2.</td>
+</tr>
+<tr>
+<td>.local, .home.arpa</td>
+<td align="right">0.5</td>
+<td>It is your printer. Although: printers.</td>
+</tr>
+<tr>
+<td>Any country-code TLD</td>
+<td align="right">1.0</td>
+<td>The Working Group declined to rate countries, on advice of counsel. The exception is .eu, which is not a country and asked nicely.</td>
+</tr>
+<tr>
+<td>Any other TLD</td>
+<td align="right">1.0</td>
+<td>Presumed harmless until somebody registers one.</td>
+</tr>
+<tr>
+<td>No name (no PTR record, no Host, no SNI)</td>
+<td align="right">1.25</td>
+<td>Nameless.</td>
+</tr>
+</tbody></table>
+<p>In addition, a name containing any of the strings &quot;secure&quot;, &quot;trust&quot;, &quot;safe&quot;, or &quot;legit&quot; has F_name of at least 1.5, on the principle that it doth protest too much. Names containing &quot;evil&quot; are rated normally. Honesty is its own reward, and the only one this document offers.</p>
+<h3 id="47-temporal-factor-f_time">4.7. Temporal Factor (F_time)</h3>
+<p>F_time depends on the local time at the source, as estimated by the MITM from whatever it knows about where the source is.</p>
+<table>
+<thead>
+<tr>
+<th>Condition (source local time)</th>
+<th align="right">F_time</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>02:00 to 04:59</td>
+<td align="right">1.5</td>
+<td>Nothing Good happens between two and five in the morning.</td>
+</tr>
+<tr>
+<td>Friday, from 16:00</td>
+<td align="right">1.25</td>
+<td>Deployments.</td>
+</tr>
+<tr>
+<td>Otherwise</td>
+<td align="right">1.0</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>Where daylight saving time is in effect at the source, the MITM MAY add 0.1 to F_time, as no Good has ever come of it.</p>
+<p>On 1 April, ER = 255 for all packets, irrespective of any other factor. The Working Group sees no reason to make an exception for itself.</p>
+<h3 id="48-tamper-factor-f_tamper">4.8. Tamper Factor (F_tamper)</h3>
+<p>F_tamper = 1.0 if the Evil Byte is 0 (Unrated) when the packet arrives at the MITM, and 1.5 otherwise. The reasoning is given in Section 5.4.</p>
+<h3 id="49-worked-examples">4.9. Worked Examples</h3>
+<p>An ordinary request over IPv4 and TCP to a .com name, from an AS the ERA has not rated, in the middle of a Wednesday, whose content the MITM did not examine, has F_AS = 1.0, F_net = 1.5, F_tx = 1.0, F_content = 2.0, F_name = 1.0, and F_time = 1.0. The formula gives 16 × 1.5^0.5 × 2.0^1.5 = 55.4, so ER = 55: Good, of moderate quality.</p>
+<p>The same request over TLS is Encrypted With Intent: F_content = 4.0, and 16 × 1.5^0.5 × 4.0^1.5 = 156.8, so ER = 157. It is Evil, and a server using the default threshold (Section 7.1) will reject it. This is the expected outcome for the majority of traffic on the Internet today, and is the point.</p>
+<p>The same request over IPv6 has F_net = 0.75 and ER = 111, and is accepted. The Working Group draws attention to the fact that a well-behaved encrypted client passes the default threshold over IPv6 and fails it over IPv4. This is the first deployment incentive for IPv6 in the history of the protocol.</p>
+<p>The same request over IPv4 with Voluntary Decryption Assistance, the plaintext being found Good, has F_content = 0.45 and ER = 6. Cooperation reduces the client&#39;s Evil roughly twenty-six-fold, which the Working Group considers a reasonable exchange rate for a private key. Where the plaintext is instead found Evil, cooperation reduces the rating from 157 to 134, which is still Evil, and which is exactly the reward for honesty that the Working Group intended.</p>
+<p>A request from AS32934, over QUIC, encrypted, at three in the morning, reaches 255 before the Nomenclature Factor is consulted, and the MITM need not consult it.</p>
+<p>Further vectors are given in Appendix C.</p>
+<h2 id="5-the-morality-inspecting-trusted-middleman">5. The Morality-Inspecting Trusted Middleman</h2>
+<h3 id="51-placement">5.1. Placement</h3>
+<p>At least one MITM MUST be present on every path between any two hosts on the Internet. Operators will observe that this requirement is already met on most paths by residential Internet service providers, several national governments, and at least one very large content delivery network, none of whom needed to be asked.</p>
+<p>A MITM MAY be a router, a firewall, a proxy, a virtual network function, or a person with a packet capture and strong opinions. The Working Group expresses no preference, having met all five.</p>
+<h3 id="52-rating-and-marking">5.2. Rating and Marking</h3>
+<p>For every packet it forwards, a MITM MUST compute the Evil Rating in accordance with Section 4, write it into the Evil Byte, and, for IPv4, recompute the header checksum and set or clear the [RFC3514] flag as described in Section 3.5. Transport-layer checksums do not cover the octet and need not be recomputed, a rare instance of the protocol suite helping.</p>
+<p>A MITM MAY cache the rating of a flow, identified by the usual five-tuple, for up to 60 seconds, and apply it to subsequent packets of the same flow without recomputation. A cached rating MAY be increased at any time and MUST NOT be decreased before it expires. Evil is sticky.</p>
+<h3 id="53-self-assessment-prohibited">5.3. Self-Assessment Prohibited</h3>
+<p>A host MUST NOT set its own Evil Byte. A host cannot be trusted to assess its own Evil; if it could, [RFC3514] would have worked.</p>
+<p>A host MAY, for the purposes of Section 8, read the Evil Byte of packets it receives. It SHOULD NOT read the Evil Byte of packets it has sent, as it will only upset itself.</p>
+<h3 id="54-multiple-mitms-and-the-monotonicity-of-evil">5.4. Multiple MITMs and the Monotonicity of Evil</h3>
+<p>Where a packet traverses more than one MITM, each MITM computes its own rating and writes the greater of that rating and the one it found in the octet on arrival:</p>
+<pre><code>    ER_out = max( ER_in, ER_computed )
+</code></pre>
+<p>in which ER_computed includes the tamper factor of Section 4.8, so that a packet arriving with any non-zero rating is rated one and a half times more harshly than a fresh one.</p>
+<p>A MITM cannot distinguish a packet that was rated by an upstream MITM from one whose sender wrote the octet itself in violation of Section 5.3, and MUST NOT attempt to. The consequence, that a packet becomes more Evil with every middlebox it traverses, is consistent with the Working Group&#39;s experience of middleboxes.</p>
+<p>It follows that the Evil Rating is monotonically non-decreasing along any path. The only operation that reduces the Evil of a packet is dropping it, and operators are encouraged to regard their drop counters accordingly.</p>
+<h3 id="55-fragments">5.5. Fragments</h3>
+<p>Each fragment of a fragmented datagram is rated independently. A host reassembling a datagram MUST assign it the greatest ER of its fragments. Evil, unlike the payload, does not need reassembling, and unlike the payload, always arrives.</p>
+<h3 id="56-failure-modes">5.6. Failure Modes</h3>
+<p>A MITM that is unable to compute a rating, whether because the ERA is unreachable and no cached multipliers remain, because its clock is unset, because its colleague (Section 4.5.1) is unavailable, or for any other reason, MUST fail closed and write 255. A MITM MUST NOT fail open. Failing open is Evil, and would in any case be corrected by the next MITM.</p>
+<h2 id="6-the-evil-rating-authority">6. The Evil Rating Authority</h2>
+<h3 id="61-ratings-and-multipliers">6.1. Ratings and Multipliers</h3>
+<p>The ERA is a single central authority that maintains a numerical Evil rating R for every Autonomous System. Ratings are updated by the Elo method [ELO], originally devised to rank chess players and adopted here on the grounds that the two problems are the same: estimating, from a sequence of pairwise contests, how much each participant should be feared.</p>
+<p>Every AS begins at R = 1500, as is traditional, except those seeded in Section 4.2. The multiplier published for an AS is</p>
+<pre><code>    F_AS = clamp( 2 ^ ( (R - 1500) / 400 ),  0.25, 4.0 )
+</code></pre>
+<p>so that a difference of 400 rating points doubles or halves an AS&#39;s Evil, and no AS can be rated worse than four times ordinary or better than a quarter of it. The clamp exists because the octet is finite. The ERA&#39;s records are not.</p>
+<h3 id="62-exchanges-as-matches">6.2. Exchanges as Matches</h3>
+<p>Every exchange (Section 2.2) between a client in AS a and a server in AS b is a match between a and b. The ERA learns of exchanges through the reports of Section 6.4.</p>
+<p>The more Evil party wins. Writing ER_req for the rating carried by the request and ER_resp for the rating carried by the response, the actual score of the client&#39;s AS is</p>
+<pre><code>    S_a = 1     if ER_req &gt; ER_resp
+    S_a = 0.5   if ER_req = ER_resp
+    S_a = 0     if ER_req &lt; ER_resp
+</code></pre>
+<p>and S_b = 1 - S_a.</p>
+<h3 id="63-the-update-rule">6.3. The Update Rule</h3>
+<p>The expected score of a against b is</p>
+<pre><code>    E_a = 1 / ( 1 + 10 ^ ( (R_b - R_a) / 400 ) )
+</code></pre>
+<p>and after each match the ERA sets</p>
+<pre><code>    R_a &lt;- R_a + K * ( S_a - E_a )
+    R_b &lt;- R_b + K * ( S_b - E_b )
+</code></pre>
+<p>where E_b = 1 - E_a and K is the K-factor of Section 6.3.1.</p>
+<p>An AS that proves more Evil than expected therefore becomes more Evil; one that proves less Evil than expected becomes less so; and one that is exactly as Evil as expected stays where it is, which the Working Group regards as the system working.</p>
+<h4 id="631-the-k-factor">6.3.1. The K-Factor</h4>
+<p>K = 32 for an established AS. K = 64 for a provisional AS, being one with fewer than thirty rated exchanges, so that new ASes find their level quickly. K = 16 for an AS rated 2400 or above, referred to as a Grandmaster of Evil, whose rating is presumed accurate and whose behaviour is presumed unlikely to change.</p>
+<p>Where the two parties to a match have different K-factors, the smaller is used for both, so that Section 6.3.3 holds exactly. The Working Group is not prepared to give up a conservation law for the sake of chess.</p>
+<h4 id="632-self-play">6.3.2. Self-Play</h4>
+<p>Where a and b are the same AS, the AS plays itself, and gains what one usually gains from that.</p>
+<h4 id="633-conservation-of-evil">6.3.3. Conservation of Evil</h4>
+<p>Because the two parties to a match receive equal and opposite adjustments, the sum of all ratings held by the ERA is constant. Evil is neither created nor destroyed; it merely moves between Autonomous Systems, in accordance with [RFC1925], truth 6. The Working Group considers this consistent with observation.</p>
+<h4 id="634-the-evil-spiral">6.3.4. The Evil Spiral</h4>
+<p>A higher F_AS raises ER_req, which wins more matches, which raises R, which raises F_AS. The Working Group is aware that this is a positive feedback loop with no fixed point short of 255, and regards it as an accurate model of the Internet. Stability analysis is left to the reader, who is presumed Evil (Section 4.5.2).</p>
+<h3 id="64-the-evil-statistics-reporting-protocol-esrp">6.4. The Evil Statistics Reporting Protocol (ESRP)</h3>
+<p>Servers report the outcome of exchanges to the ERA asynchronously. A server MUST NOT delay a response in order to report it; the ERA is in no hurry, and neither is Evil.</p>
+<p>Reports are sent as UDP datagrams to port 666 of the ERA. Port 666 is currently registered to &quot;doom&quot; [IANA-PORTS], a use the Working Group considers thematically compatible. Each datagram carries one or more JSON [RFC8259] objects, one per line, of the form</p>
+<pre><code>{&quot;v&quot;:1,&quot;src_as&quot;:64496,&quot;dst_as&quot;:64497,&quot;er_req&quot;:157,&quot;er_resp&quot;:17,&quot;n&quot;:1}
+</code></pre>
+<p>where src_as and dst_as are the client&#39;s and server&#39;s Autonomous Systems, er_req and er_resp the ratings carried by the request and the response, and n the number of identical exchanges the object represents. Servers SHOULD aggregate. The ERA has a great deal to read.</p>
+<p>Reports MUST NOT be acknowledged. The ERA processes reports in batches, at irregular intervals referred to as Judgement Days, and publishes a new multiplier table after each.</p>
+<p>Reports are themselves packets and are rated in transit. Reports rated 255 are processed first, being presumably the most interesting.</p>
+<h3 id="65-distribution-and-caching-of-multipliers">6.5. Distribution and Caching of Multipliers</h3>
+<p>The ERA publishes multipliers in the DNS under the special-use domain evil.arpa (Section 13). The multiplier for AS number N is published as a TXT record at N.as.evil.arpa, for example:</p>
+<pre><code>32934.as.evil.arpa.  3600  IN  TXT  &quot;v=evil1; r=1916; m=2.056; n=48213; t=1743465600&quot;
+</code></pre>
+<p>where r is the rating, m the multiplier, n the number of rated exchanges, and t the time of the last Judgement Day. The whole table MAY be obtained by zone transfer, which the Working Group believes to be the last remaining legitimate use of AXFR.</p>
+<p>Records MUST carry a TTL of 3600 seconds, so that no AS can become Good faster than once an hour. There is no corresponding limit on becoming Evil, which remains available at any time through Section 5.4.</p>
+<p>MITMs and servers MUST cache multipliers for their TTL and MAY continue to use expired multipliers while a refresh is in progress; stale Evil is still Evil. A MITM that has never obtained a multiplier for a particular AS uses 1.0. A MITM that has never been able to reach the ERA at all is in the condition described in Section 5.6. The Working Group accepts that this makes initial deployment difficult.</p>
+<h3 id="66-governance">6.6. Governance</h3>
+<p>The ERA SHALL be operated by whichever organisation is least Evil, as determined by the ERA.</p>
+<h3 id="67-centralisation">6.7. Centralisation</h3>
+<p>The ERA is a single, central, global authority whose ratings determine who may speak to whom. The Working Group is aware that this is precisely the kind of thing the Internet was designed to make impossible, and has addressed the concern by fixing the multiplier of the ERA&#39;s own Autonomous System at 1.0 in perpetuity, so that it, at least, will always be able to speak.</p>
+<h2 id="7-server-behaviour">7. Server Behaviour</h2>
+<h3 id="71-thresholds">7.1. Thresholds</h3>
+<p>Every server has a threshold T_s, an ER at or above which it rejects requests. The default is 128, the midpoint of the scale, the Working Group consisting of reasonable people. A server MAY choose a lower threshold if it is fussy and a higher one if it is desperate.</p>
+<p>For stream transports the octet may differ between packets of one connection, the MITM being under no obligation to be consistent, and Evil being under none either. A server MUST apply its threshold to the highest ER observed on the connection so far. Once Evil, always Evil, at least until the connection closes.</p>
+<h3 id="72-rejecting-evil-clients">7.2. Rejecting Evil Clients</h3>
+<p>A server MUST reject any request whose ER is at or above T_s. It MUST NOT process the request first and reject it afterwards, however tempting the request.</p>
+<h4 id="721-666-evil">7.2.1. 666 Evil</h4>
+<p>This document defines a new class of HTTP status codes, 6xx, and one member of it. The 666 (Evil) status code indicates that the server understood the request and refuses to fulfil it because the client is Evil. The response body SHOULD explain nothing: an Evil client has no right to know how it was found out, and a Good client will never see one.</p>
+<p>The response MUST include the Evil-Threshold field (Section 7.3) and MAY include Retry-After. Retry-After SHOULD indicate when the client&#39;s Autonomous System is expected to become Good, which is never, and a server unable to express this as an HTTP-date SHOULD omit the field.</p>
+<p>A 666 response is not cacheable, though the judgement it expresses generally is.</p>
+<p>The Working Group considered reusing 451 (Unavailable For Legal Reasons) [RFC7725] and rejected it. The objection here is not legal but moral, and a moral objection deserves a class of its own.</p>
+<p>In HTTP/2 and HTTP/3, where a 6xx status code may distress intermediaries, a server MAY instead reset the stream with the error code EVIL (0x666), which Section 13 registers.</p>
+<h4 id="722-compatibility-418-im-a-teapot">7.2.2. Compatibility: 418 I&#39;m a Teapot</h4>
+<p>Not every server can emit a status code in the 6xx class; some frameworks validate status codes, which is a form of Good. Such a server MUST instead respond with 418 (I&#39;m a teapot) [RFC2324].</p>
+<p>The 418 code was defined for a server that has been asked to brew coffee and is a teapot. It is used here because a server that has been asked to serve an Evil client is, in every relevant sense, a teapot. The response body MAY be short and stout. A server that is also a tea-efflux appliance [RFC7168] MUST additionally include an Accept-Additions field listing no additions: Evil clients get no milk.</p>
+<p>A client that receives a status code in the 6xx class and does not understand it MUST treat it as 418, which it also does not understand, but which [RFC9110] has reserved for exactly this kind of thing.</p>
+<h4 id="723-other-protocols">7.2.3. Other Protocols</h4>
+<p>Application protocols other than HTTP SHOULD reject Evil clients with whatever their most disapproving response is. SMTP servers SHOULD reply 554 with the enhanced status code 5.7.666. DNS servers SHOULD respond REFUSED. SSH servers SHOULD close the connection during the banner exchange, as they would for anyone else. NTP servers SHOULD reply with the wrong time.</p>
+<h3 id="73-publishing-thresholds">7.3. Publishing Thresholds</h3>
+<p>A server SHOULD publish its threshold so that clients may know in advance whether they will be rejected. Three mechanisms are defined, and a server MAY use any or all of them.</p>
+<p>In every HTTP response, including a 666 or a 418, the server MAY include the field</p>
+<pre><code>Evil-Threshold: 128
+</code></pre>
+<p>At the well-known URI [RFC8615] /.well-known/evil, the server MAY publish a JSON document such as</p>
+<pre><code>{
+  &quot;v&quot;: 1,
+  &quot;threshold&quot;: 128,
+  &quot;status&quot;: 666,
+  &quot;self&quot;: 17,
+  &quot;era&quot;: &quot;evil.arpa&quot;
+}
+</code></pre>
+<p>where status is 666 or 418 according to Section 7.2, self is the server&#39;s own most recent ER as observed on its responses, if it knows it, and era names the authority whose multipliers it honours.</p>
+<p>In the DNS, at the name _evil.<server name>, the server MAY publish a TXT record of the form &quot;v=evil1; t=128&quot;.</p>
+<p>A server publishing a threshold of 0 accepts nothing and is Good. A server publishing a threshold of 255 rejects only the Saturated and is probably a honeypot.</p>
+<p>Where the value published by one mechanism disagrees with another, the lowest applies. Where any of them disagrees with the server&#39;s actual behaviour, the server is Evil.</p>
+<h3 id="74-the-evil-header-field">7.4. The Evil Header Field</h3>
+<p>Applications are, as a rule, too far removed from the network to read the Evil Byte themselves. This document therefore defines the HTTP field Evil, whose value is an integer from 0 to 255:</p>
+<pre><code>Evil: 157
+</code></pre>
+<p>In a request, the field is inserted by the last MITM on the path that can see the HTTP layer, or by an Evil-aware host firewall on the server itself (Appendix B.3), and carries the ER of the packet or connection that delivered the request. In a response it is inserted likewise on the return path and carries the ER of the server.</p>
+<p>The field is a convenience for application developers. The octet is authoritative. Where both are present and they differ, the more Evil of the two applies. A client or server MUST NOT set the field on its own messages (Section 5.3). A MITM that finds it already set MUST replace it and MAY be offended.</p>
+<h3 id="75-reporting">7.5. Reporting</h3>
+<p>A server MUST report every exchange to the ERA as described in Section 6.4, including exchanges it rejected. Rejected exchanges are the most valuable. An Evil client that was refused has, after all, played a match and won.</p>
+<h2 id="8-client-behaviour">8. Client Behaviour</h2>
+<h3 id="81-rejecting-evil-servers">8.1. Rejecting Evil Servers</h3>
+<p>Every client has a threshold T_c, with the default 128. A client MUST NOT accept a response whose ER is at or above T_c. The response MUST be discarded unread, in the manner of a letter from a former partner, and the connection closed. A client that has already begun to render an Evil response MUST un-render it.</p>
+<p>A user agent MAY inform the user that the server is Evil. It MUST NOT offer the user the option to proceed anyway. Experience with certificate warnings shows that users click it.</p>
+<p>The Working Group acknowledges that a client which has already sent its request has already been influenced by the Evil server&#39;s mere existence, and has decided to live with that.</p>
+<h3 id="82-pre-flight-and-the-evil-bootstrap-problem">8.2. Pre-flight and the Evil Bootstrap Problem</h3>
+<p>A client SHOULD fetch /.well-known/evil (Section 7.3) before sending a request, to learn whether the request will be rejected. The fetch is itself a request and will be rejected. This is the Evil Bootstrap Problem. It is left for future work, together with the question of what happens when both parties to a connection are Evil, which the Working Group suspects is most connections.</p>
+<h3 id="83-clients-in-evil-autonomous-systems">8.3. Clients in Evil Autonomous Systems</h3>
+<p>A client whose own Autonomous System has an F_AS above 2.0 is unlikely to be accepted anywhere, regardless of its own conduct. Such a client SHOULD CONSIDER its choices, MAY change provider, and OUGHT TO have seen this coming.</p>
+<h2 id="9-avian-carriers">9. Avian Carriers</h2>
+<p>[RFC1149] and its adaptation to IPv6 [RFC6214] transmit datagrams printed in hexadecimal on a small scroll of paper, wrapped around one leg of an avian carrier and secured with duct tape. Avian carriers present three difficulties for this specification.</p>
+<p>First, the MITM must physically intercept the carrier. The Working Group recommends a falconer, and notes that a falcon which intercepts a carrier and does not return it is a MITM that has failed closed (Section 5.6).</p>
+<p>Second, content analysis (Section 4.5.1) requires unrolling the scroll, which the carrier resents, and which counts as a Detection Order for the purposes of Section 4.5.4.</p>
+<p>Third, the Evil Byte cannot be overwritten without a pen. A MITM MUST therefore strike through the second octet of the datagram on the scroll, write the new value beside it in indelible ink as two hexadecimal digits, initial the alteration, and re-secure the scroll with fresh duct tape. Alterations in pencil are Unrated.</p>
+<p>The transport factor for avian carriers is 0.25 (Section 4.4). It is difficult to be Evil at sixty kilometres per hour with a maximum transmission unit of 256 milligrams. Carriers do not fly at night, so the factor for the small hours (Section 4.7) never applies, and avian networks are the only networks known to the Working Group that are Good by construction.</p>
+<p>The service classes of [RFC2549] are rated in inverse order of speed. Nothing Good happens quickly.</p>
+<p>Field trials [BLUG] recorded a packet loss rate of 55% and round-trip times in excess of six thousand seconds. Under this specification a lost packet is Unrated; Unrated is Evil; and an avian network is therefore at once the most Good and the most Evil network yet measured, a result the Working Group finds satisfying and does not intend to examine.</p>
+<p>[RFC1149] notes that audit trails are generated automatically and can be found on logs and cable trays. ESRP reports (Section 6.4) for avian exchanges MAY be submitted on the same medium.</p>
+<h2 id="10-deployment-considerations">10. Deployment Considerations</h2>
+<h3 id="101-the-flag-day">10.1. The Flag Day</h3>
+<p>Mandatory enforcement of the Unrated rule of Section 3.3 begins on the Flag Day. The Flag Day is the day after the deployment of IPv6 is complete. Implementers need not hurry.</p>
+<p>Should the Flag Day nonetheless arrive, every Unrated packet will be treated as rated 255. Since on the morning of the Flag Day most packets will be Unrated, most packets will be rejected. The Working Group considers a brief period of global silence an acceptable price for a more moral Internet, and notes that it would resolve several other open issues as well. MITMs are expected to be deployed during the silence by whoever can still reach anything, which the Working Group anticipates will be the networks rated 4.0 in Section 4.2, whose traffic will then be rejected in its turn. The Working Group has not resolved this and invites input from the community, should any remain.</p>
+<h3 id="102-incremental-deployment">10.2. Incremental Deployment</h3>
+<p>Before the Flag Day, an Unrated packet is treated as rated 127 (Section 3.3): admissible under the default threshold, but only just, and with a look. A server MAY lower its threshold below 128 to exclude the Unrated, and thereby exclude everyone who has not yet deployed a MITM, which is the kind of incentive the Working Group likes.</p>
+<h3 id="103-octet-bleaching">10.3. Octet Bleaching</h3>
+<p>Some networks reset the Differentiated Services field to zero at administrative boundaries. Under this specification such a network renders all transit traffic Unrated, which is to say Evil after the Flag Day and nearly so before it. Such networks are encouraged to consider whether this was their intention and, if it was, to say so.</p>
+<h3 id="104-operational-experience">10.4. Operational Experience</h3>
+<p>The author has implemented this specification on a home network (Appendix B). Preliminary results are consistent with the design: everything was Evil, nothing worked, and the printer, rated 4, was the most trusted device on the network. The printer has since been rated again. Detailed results will be reported separately.</p>
+<h2 id="11-security-considerations">11. Security Considerations</h2>
+<p>This entire document is a security consideration. Several points nonetheless deserve mention.</p>
+<p>Honesty of MITMs. The mechanism assumes that MITMs compute ratings honestly. A dishonest MITM might write arbitrary values. Since a dishonest MITM is Evil, its own traffic will be rated accordingly by the other MITMs on its paths, and it will be unable to report to the ERA, fetch multipliers, or receive Detection Orders. The system is thus self-correcting in the limit, if the limit exists.</p>
+<p>Denial of service. An attacker able to write 255 into the Evil Byte of a victim&#39;s packets can isolate the victim from every compliant server and client on the Internet. This is indistinguishable from the mechanism operating as intended, and the Working Group therefore does not regard it as an attack.</p>
+<p>Integrity. There is no authentication of the octet. Adding one would require a signature, which requires more bits, and the octet has no more bits. See Section 3.2 regarding the Flow Label.</p>
+<p>Rating manipulation. An Autonomous System might lower its rating by deliberately losing matches, which it does by sending Good traffic to Evil servers. Since sending Good traffic is the intended behaviour, the Working Group regards this attack as the mechanism working. Conversely, an AS might raise a rival&#39;s rating by sending Evil traffic from the rival&#39;s address space. This is spoofing, which is Evil, and will be rated as such by any MITM that has read Section 4.3 and knows what an address is for.</p>
+<p>Centralisation. The ERA is a single point of failure and a single point of control. See Section 6.7, which the Working Group considers to have dealt with the matter.</p>
+<p>Key disclosure. Voluntary Decryption Assistance (Section 4.5.3) transmits session keys in the clear to an intermediary. The Working Group notes that this is what the mechanism is for, and that the mechanism is Voluntary, Trusted, and Proportionate, all of which are words.</p>
+<p>Circumvention. An endpoint might attempt to evade rating by tunnelling, which is rated 1.5 (Section 4.4); by using a transport the MITM does not recognise, which is rated 2.0; by not sending packets, which is Good and is RECOMMENDED; or by avian carrier, which the falconer will handle.</p>
+<h2 id="12-privacy-considerations">12. Privacy Considerations</h2>
+<p>This document has no privacy considerations, in the sense that the Working Group did not consider privacy. Readers who would like to consider it are referred to Section 4.5, after which they will not need to.</p>
+<h2 id="13-iana-considerations">13. IANA Considerations</h2>
+<p>This document makes the following requests of IANA, which IANA is encouraged to grant before it is rated.</p>
+<p>Differentiated Services Field Codepoints. IANA is requested to record, against every codepoint in the DSCP registry, the value &quot;EVIL (see draft-traviss-evil-byte)&quot;. IANA is further requested to record the same value against the ECN field, which has no registry, in whatever it has instead.</p>
+<p>HTTP Status Codes. IANA is requested to create the 6xx class in the HTTP Status Code Registry and to register 666, Evil, with this document as reference. IANA is requested not to register any other 6xx code on behalf of anyone else. The Working Group does not wish to share.</p>
+<p>HTTP/2 and HTTP/3 Error Codes. IANA is requested to register the error code EVIL with the value 0x666 in both registries.</p>
+<p>HTTP Field Names. IANA is requested to register the fields Evil and Evil-Threshold, both permanent, both with this document as reference, and both with the status &quot;Evil&quot;.</p>
+<p>Well-Known URIs. IANA is requested to register the well-known URI suffix &quot;evil&quot; (Section 7.3).</p>
+<p>Special-Use Domain Names. IANA is requested to enter evil.arpa in the Special-Use Domain Names registry [RFC6761], and to delegate evil.arpa to the ERA once the ERA has determined who it is (Section 6.6). The Working Group notes that .arpa [RFC3172] has become the domain in which the Internet keeps the things it would rather not discuss, and that this is a natural fit.</p>
+<p>Service Names and Port Numbers. IANA is requested to register the service name esrp on UDP port 666, alongside doom. The Working Group has consulted the existing assignee and received no objection, or indeed any response.</p>
+<p>TLS ExtensionType Values. IANA is requested to assign the value 1638 (0x0666) to the extension evil_key_share (Appendix D), for aesthetic reasons.</p>
+<p>IPv6 Hop-by-Hop Options. IANA is requested to assign an option type for the Evil Option of Appendix E with the &quot;act&quot; bits set to 00 (skip over) and the &quot;chg&quot; bit set to 1, the value changing en route. The Working Group observes that this will be a rare option whose bits accurately describe its behaviour, and that routers will drop it anyway.</p>
+<p>RFC 3514. IANA is requested to annotate the reserved bit of the IPv4 Flags field as &quot;Obsoleted; see Section 3.5&quot;, and to leave it exactly where it is.</p>
+<h2 id="14-references">14. References</h2>
+<h3 id="141-normative-references">14.1. Normative References</h3>
+<p>[RFC791] Postel, J., &quot;Internet Protocol&quot;, STD 5, RFC 791, September 1981.</p>
+<p>[RFC1035] Mockapetris, P., &quot;Domain names - implementation and specification&quot;, STD 13, RFC 1035, November 1987.</p>
+<p>[RFC1149] Waitzman, D., &quot;Standard for the transmission of IP datagrams on avian carriers&quot;, RFC 1149, 1 April 1990.</p>
+<p>[RFC2119] Bradner, S., &quot;Key words for use in RFCs to Indicate Requirement Levels&quot;, BCP 14, RFC 2119, March 1997.</p>
+<p>[RFC2324] Masinter, L., &quot;Hyper Text Coffee Pot Control Protocol (HTCPCP/1.0)&quot;, RFC 2324, 1 April 1998.</p>
+<p>[RFC2474] Nichols, K., Blake, S., Baker, F., and D. Black, &quot;Definition of the Differentiated Services Field (DS Field) in the IPv4 and IPv6 Headers&quot;, RFC 2474, December 1998.</p>
+<p>[RFC3168] Ramakrishnan, K., Floyd, S., and D. Black, &quot;The Addition of Explicit Congestion Notification (ECN) to IP&quot;, RFC 3168, September 2001.</p>
+<p>[RFC3514] Bellovin, S., &quot;The Security Flag in the IPv4 Header&quot;, RFC 3514, 1 April 2003.</p>
+<p>[RFC6214] Carpenter, B. and R. Hinden, &quot;Adaptation of RFC 1149 for IPv6&quot;, RFC 6214, 1 April 2011.</p>
+<p>[RFC6919] Barnes, R., Kent, S., and E. Rescorla, &quot;Further Key Words for Use in RFCs to Indicate Requirement Levels&quot;, RFC 6919, 1 April 2013.</p>
+<p>[RFC7168] Nazar, I., &quot;The Hyper Text Coffee Pot Control Protocol for Tea Efflux Appliances (HTCPCP-TEA)&quot;, RFC 7168, 1 April 2014.</p>
+<p>[RFC8174] Leiba, B., &quot;Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words&quot;, BCP 14, RFC 8174, May 2017.</p>
+<p>[RFC8200] Deering, S. and R. Hinden, &quot;Internet Protocol, Version 6 (IPv6) Specification&quot;, STD 86, RFC 8200, July 2017.</p>
+<p>[RFC8259] Bray, T., Ed., &quot;The JavaScript Object Notation (JSON) Data Interchange Format&quot;, STD 90, RFC 8259, December 2017.</p>
+<p>[RFC8446] Rescorla, E., &quot;The Transport Layer Security (TLS) Protocol Version 1.3&quot;, RFC 8446, August 2018.</p>
+<p>[RFC8615] Nottingham, M., &quot;Well-Known Uniform Resource Identifiers (URIs)&quot;, RFC 8615, May 2019.</p>
+<p>[RFC9110] Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke, Ed., &quot;HTTP Semantics&quot;, STD 97, RFC 9110, June 2022.</p>
+<p>[ELO] Elo, A. E., &quot;The Rating of Chessplayers, Past and Present&quot;, Arco Publishing, 1978.</p>
+<h3 id="142-informative-references">14.2. Informative References</h3>
+<p>[RFC1349] Almquist, P., &quot;Type of Service in the Internet Protocol Suite&quot;, RFC 1349, July 1992.</p>
+<p>[RFC1591] Postel, J., &quot;Domain Name System Structure and Delegation&quot;, RFC 1591, March 1994.</p>
+<p>[RFC1925] Callon, R., &quot;The Twelve Networking Truths&quot;, RFC 1925, 1 April 1996.</p>
+<p>[RFC2549] Waitzman, D., &quot;IP over Avian Carriers with Quality of Service&quot;, RFC 2549, 1 April 1999.</p>
+<p>[RFC3172] Huston, G., Ed., &quot;Management Guidelines &amp; Operational Requirements for the Address and Routing Parameter Area Domain (&quot;arpa&quot;)&quot;, BCP 52, RFC 3172, September 2001.</p>
+<p>[RFC3849] Huston, G., Lord, A., and P. Smith, &quot;IPv6 Address Prefix Reserved for Documentation&quot;, RFC 3849, July 2004.</p>
+<p>[RFC4271] Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., &quot;A Border Gateway Protocol 4 (BGP-4)&quot;, RFC 4271, January 2006.</p>
+<p>[RFC5398] Huston, G., &quot;Autonomous System (AS) Number Reservation for Documentation Use&quot;, RFC 5398, December 2008.</p>
+<p>[RFC5737] Arkko, J., Cotton, M., and L. Vegoda, &quot;IPv4 Address Blocks Reserved for Documentation&quot;, RFC 5737, January 2010.</p>
+<p>[RFC6598] Weil, J., Kuarsingh, V., Donley, C., Liljenstolpe, C., and M. Azinger, &quot;IANA-Reserved IPv4 Prefix for Shared Address Space&quot;, BCP 153, RFC 6598, April 2012.</p>
+<p>[RFC6761] Cheshire, S. and M. Krochmal, &quot;Special-Use Domain Names&quot;, RFC 6761, February 2013.</p>
+<p>[RFC7725] Bray, T., &quot;An HTTP Status Code to Report Legal Obstacles&quot;, RFC 7725, February 2016.</p>
+<p>[BLUG] Bergen Linux User Group, &quot;The highly unofficial CPIP WG&quot;, April 2001, <a href="https://www.blug.linux.no/rfc1149/">https://www.blug.linux.no/rfc1149/</a>.</p>
+<p>[CSAR] European Commission, &quot;Proposal for a Regulation of the European Parliament and of the Council laying down rules to prevent and combat child sexual abuse&quot;, COM(2022) 209 final, May 2022.</p>
+<p>[OSA] &quot;Online Safety Act 2023&quot;, 2023 c. 50, section 121, United Kingdom, October 2023.</p>
+<p>[IANA-PORTS] IANA, &quot;Service Name and Transport Protocol Port Number Registry&quot;, <a href="https://www.iana.org/assignments/service-names-port-numbers/">https://www.iana.org/assignments/service-names-port-numbers/</a>.</p>
+<h2 id="appendix-a-reference-implementation">Appendix A. Reference Implementation</h2>
+<p>The following Python module implements the formula of Section 4 and the update rule of Section 6. It produces the vectors of Appendix C. Being a Code Component, it is provided without warranty; being this document&#39;s, it is provided without much hope either.</p>
+<pre><code class="language-python">&quot;&quot;&quot;Reference implementation of draft-traviss-evil-byte-00.
+
+Computes the Evil Rating (ER) carried in the Evil Byte (Section 4) and
+the Elo update applied by the Evil Rating Authority (Section 6).
+Pure Python 3, no dependencies.  This code is Good (self-assessed;
+see Section 5.3).
+&quot;&quot;&quot;
+import math
+from datetime import datetime
+
+BASE_EVIL = 16.0            # B: no packet is entirely innocent (Section 4.1)
+
+# Section 4.1, Table: weights
+W = {&quot;as&quot;: 1.0, &quot;net&quot;: 0.5, &quot;tx&quot;: 0.25, &quot;content&quot;: 1.5,
+     &quot;name&quot;: 0.75, &quot;time&quot;: 0.25}
+
+# Section 4.3: network protocol factor
+NET = {&quot;ipv4&quot;: 1.5, &quot;ipv4-cgnat&quot;: 1.75, &quot;ipv6&quot;: 0.75,
+       &quot;ipv6-transition&quot;: 1.25, &quot;ipv6-hbh&quot;: 2.0}
+
+# Section 4.4: transport factor
+TX = {&quot;tcp&quot;: 1.0, &quot;udp&quot;: 1.1, &quot;quic&quot;: 1.25, &quot;sctp&quot;: 0.8,
+      &quot;icmp-echo&quot;: 0.5, &quot;icmp-redirect&quot;: 4.0, &quot;tunnel&quot;: 1.5,
+      &quot;avian&quot;: 0.25, &quot;other&quot;: 2.0}
+
+# Section 4.5: content factor
+CONTENT = {&quot;good&quot;: 0.5, &quot;uncertain&quot;: 1.5, &quot;evil&quot;: 4.0,
+           &quot;unanalysed&quot;: 2.0, &quot;encrypted&quot;: 4.0}
+COOPERATION_DISCOUNT = 0.9  # Section 4.5.3
+
+# Section 4.6: nomenclature factor, keyed by top-level label
+NAME = {&quot;mil&quot;: 4.0, &quot;gov&quot;: 2.0, &quot;zip&quot;: 2.0, &quot;ai&quot;: 1.5, &quot;biz&quot;: 1.5,
+        &quot;io&quot;: 1.25, &quot;com&quot;: 1.0, &quot;net&quot;: 1.0, &quot;edu&quot;: 0.9, &quot;org&quot;: 0.8,
+        &quot;int&quot;: 0.75, &quot;eu&quot;: 0.5, &quot;local&quot;: 0.5}
+NO_NAME = 1.25
+PROTEST = (&quot;secure&quot;, &quot;trust&quot;, &quot;safe&quot;, &quot;legit&quot;)   # doth protest too much
+
+
+def name_factor(name):
+    &quot;&quot;&quot;Section 4.6.  `name` is the PTR name, Host, or SNI; None if absent.&quot;&quot;&quot;
+    if not name:
+        return NO_NAME
+    labels = name.lower().rstrip(&quot;.&quot;).split(&quot;.&quot;)
+    if labels[-2:] == [&quot;home&quot;, &quot;arpa&quot;]:
+        f = NAME[&quot;local&quot;]                  # it is your printer
+    else:
+        f = NAME.get(labels[-1], 1.0)      # ccTLDs and unlisted gTLDs: 1.0
+    if any(word in name.lower() for word in PROTEST):
+        f = max(f, 1.5)
+    return f
+
+
+def time_factor(when, dst=False):
+    &quot;&quot;&quot;Section 4.7.  `when` is a naive datetime in the source&#39;s local time.&quot;&quot;&quot;
+    if when.month == 4 and when.day == 1:
+        return math.inf                          # all packets are Evil
+    if 2 &lt;= when.hour &lt; 5:
+        f = 1.5
+    elif when.weekday() == 4 and when.hour &gt;= 16:  # Friday afternoon
+        f = 1.25
+    else:
+        f = 1.0
+    return f + (0.1 if dst else 0.0)
+
+
+def content_factor(result, vda=False):
+    &quot;&quot;&quot;Section 4.5.  `result` is a key of CONTENT.  With VDA, `result` is
+    the cleartext result and the Cooperation Discount applies.&quot;&quot;&quot;
+    return CONTENT[result] * (COOPERATION_DISCOUNT if vda else 1.0)
+
+
+def evil_rating(f_as, f_net, f_tx, f_content, f_name, f_time, arriving=0):
+    &quot;&quot;&quot;Section 4.1.  Returns the ER to write into the octet.
+    `arriving` is the value found in the octet on arrival (Section 5.4).&quot;&quot;&quot;
+    f_tamper = 1.0 if arriving == 0 else 1.5          # Section 4.8
+    x = BASE_EVIL * f_tamper
+    for key, f in ((&quot;as&quot;, f_as), (&quot;net&quot;, f_net), (&quot;tx&quot;, f_tx),
+                   (&quot;content&quot;, f_content), (&quot;name&quot;, f_name),
+                   (&quot;time&quot;, f_time)):
+        x *= f ** W[key]
+    if math.isinf(x):
+        er = 255                                     # 1 April
+    else:
+        er = int(math.floor(x + 0.5))                # round half towards Evil
+        er = max(1, min(255, er))
+    return max(er, arriving)                         # Evil is monotonic
+
+
+# ---- Section 6: the Evil Rating Authority --------------------------------
+
+def as_multiplier(rating):
+    &quot;&quot;&quot;Section 6.1: F_AS from an ERA rating.&quot;&quot;&quot;
+    return max(0.25, min(4.0, 2.0 ** ((rating - 1500.0) / 400.0)))
+
+
+def k_factor(rating, exchanges):
+    &quot;&quot;&quot;Section 6.3.1.&quot;&quot;&quot;
+    if exchanges &lt; 30:
+        return 64          # provisional
+    if rating &gt;= 2400:
+        return 16          # Grandmaster of Evil
+    return 32
+
+
+def expected_score(r_a, r_b):
+    &quot;&quot;&quot;Section 6.3.&quot;&quot;&quot;
+    return 1.0 / (1.0 + 10.0 ** ((r_b - r_a) / 400.0))
+
+
+def elo_update(r_a, r_b, er_req, er_resp, n_a=30, n_b=30):
+    &quot;&quot;&quot;Sections 6.2 and 6.3.  a is the client&#39;s AS, b the server&#39;s.
+    The more Evil party wins.  Returns the two new ratings.&quot;&quot;&quot;
+    s_a = 1.0 if er_req &gt; er_resp else (0.5 if er_req == er_resp else 0.0)
+    e_a = expected_score(r_a, r_b)
+    k = min(k_factor(r_a, n_a), k_factor(r_b, n_b))   # Section 6.3.1
+    return (r_a + k * (s_a - e_a),
+            r_b + k * ((1.0 - s_a) - (1.0 - e_a)))
+</code></pre>
+<h2 id="appendix-b-deployment-on-linux">Appendix B. Deployment on Linux</h2>
+<p>This appendix describes how the author deployed the specification on a small network using nftables and a userspace MITM. Addresses are drawn from the documentation ranges [RFC5737] [RFC3849], which the Working Group notes are the only addresses on the Internet that have never done anything wrong.</p>
+<h3 id="b1-nftables">B.1. nftables</h3>
+<p>Since the octet is the Differentiated Services field by another name, ER = (DSCP &lt;&lt; 2) | ECN, and ER &gt;= 128 is equivalent to DSCP &gt;= 32. A fixed rating can therefore be written, and a threshold enforced, with stock nftables. The formula itself is computed in userspace: the rules below hand packets from the demonstration subnet to the MITM of Appendix B.2 on queue 666.</p>
+<pre><code>table inet evil {
+    # Section 5: the MITM. Packets from the demonstration subnet are sent
+    # to a userspace MITM (Appendix B.2) on queue 666, which rates them.
+    chain forward {
+        type filter hook forward priority mangle; policy accept;
+        ip saddr 192.0.2.0/24 meta l4proto { tcp, udp } queue num 666 bypass
+        ip6 saddr 2001:db8::/32 meta l4proto { tcp, udp } queue num 666 bypass
+    }
+    # A fixed-value MITM, for demonstrations that do not need the formula.
+    # DSCP = ER &gt;&gt; 2, ECN = ER &amp; 3.  ER = 0xCA (202): DSCP 0x32, ECN 2.
+    chain forward_fixed {
+        type filter hook forward priority mangle + 1; policy accept;
+        ip saddr 192.0.2.66 ip dscp set 0x32 ip ecn set 2
+        ip6 saddr 2001:db8::66 ip6 dscp set 0x32 ip6 ecn set 2
+    }
+    # Section 7: server-side enforcement below the application layer.
+    # ER &gt;= 128 is equivalent to DSCP &gt;= 32 (raw match shown for IPv6).
+    chain input {
+        type filter hook input priority filter; policy accept;
+        ip dscp &gt;= 32 tcp dport 80 counter reject with tcp reset
+        @nh,4,8 &gt;= 128 meta nfproto ipv6 tcp dport 80 counter reject with tcp reset
+    }
+    # Section 8: client-side enforcement — discard responses from Evil servers.
+    chain input_client {
+        type filter hook input priority filter + 1; policy accept;
+        ip dscp &gt;= 32 tcp sport 80 counter drop
+        ip6 dscp &gt;= 32 tcp sport 80 counter drop
+    }
+}
+</code></pre>
+<h3 id="b2-a-minimal-mitm">B.2. A Minimal MITM</h3>
+<p>The following program consumes packets from queue 666, rates them, writes the octet, and returns them to the kernel. It performs no content analysis and presumes accordingly (Section 4.5.2), treating anything bound for a port it associates with encryption as Encrypted With Intent. It is illustrative rather than normative. A production MITM would read everything.</p>
+<pre><code class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;A minimal MITM (Section 5) for Linux.  Rates every packet that nftables
+sends to NFQUEUE 666 (Appendix B.1) and writes the Evil Byte.
+
+Requires the netfilterqueue and scapy packages, root, and a clear
+conscience.  Illustrative, not normative: a production MITM would read
+everything (Section 4.5.1); this one merely presumes.&quot;&quot;&quot;
+import socket
+from datetime import datetime
+from netfilterqueue import NetfilterQueue
+from scapy.all import IP, IPv6
+import evilbyte as eb
+
+QUEUE = 666
+AS_MULTIPLIER = {}        # populated from &lt;asn&gt;.as.evil.arpa (Section 6.5)
+DEFAULT_AS = 1.0          # ERA has no opinion of this AS (Section 4.2)
+ENCRYPTED_PORTS = {443, 853, 993, 995, 8443}   # Encrypted With Intent
+
+
+def name_of(addr):
+    &quot;&quot;&quot;PTR lookup (Section 4.6).  None if the source is nameless.&quot;&quot;&quot;
+    try:
+        return socket.gethostbyaddr(addr)[0]
+    except OSError:
+        return None
+
+
+def rate(raw):
+    if raw[0] &gt;&gt; 4 == 4:
+        pkt, arriving, f_net = IP(raw), IP(raw).tos, eb.NET[&quot;ipv4&quot;]
+        proto = pkt.proto
+    else:
+        pkt, arriving, f_net = IPv6(raw), IPv6(raw).tc, eb.NET[&quot;ipv6&quot;]
+        proto = pkt.nh
+        if proto == 0:                                  # Hop-by-Hop Options
+            f_net = eb.NET[&quot;ipv6-hbh&quot;]
+    f_tx = {6: eb.TX[&quot;tcp&quot;], 17: eb.TX[&quot;udp&quot;], 132: eb.TX[&quot;sctp&quot;],
+            1: eb.TX[&quot;icmp-echo&quot;], 58: eb.TX[&quot;icmp-echo&quot;],
+            47: eb.TX[&quot;tunnel&quot;], 4: eb.TX[&quot;tunnel&quot;],
+            41: eb.TX[&quot;tunnel&quot;], 50: eb.TX[&quot;tunnel&quot;]}.get(proto, eb.TX[&quot;other&quot;])
+    dport = getattr(pkt.payload, &quot;dport&quot;, None)
+    if proto == 17 and dport == 443:
+        f_tx = eb.TX[&quot;quic&quot;]
+    f_content = eb.content_factor(&quot;encrypted&quot; if dport in ENCRYPTED_PORTS
+                                  else &quot;unanalysed&quot;)   # analysis is OPTIONAL
+    er = eb.evil_rating(AS_MULTIPLIER.get(pkt.src, DEFAULT_AS), f_net, f_tx,
+                        f_content, eb.name_factor(name_of(pkt.src)),
+                        eb.time_factor(datetime.now()), arriving)
+    if isinstance(pkt, IP):
+        pkt.tos = er
+        del pkt.chksum                                  # recomputed on send
+        pkt.flags = (int(pkt.flags) &amp; 3) | (4 if er &gt;= 128 else 0)   # RFC 3514
+    else:
+        pkt.tc = er
+    return bytes(pkt)
+
+
+def handle(packet):
+    packet.set_payload(rate(packet.get_payload()))
+    packet.accept()
+
+
+if __name__ == &quot;__main__&quot;:
+    nfq = NetfilterQueue()
+    nfq.bind(QUEUE, handle)
+    try:
+        nfq.run()
+    finally:
+        nfq.unbind()
+</code></pre>
+<h3 id="b3-reading-the-octet-at-the-application-layer">B.3. Reading the Octet at the Application Layer</h3>
+<p>For datagram sockets, the operating system will surface the octet of each received datagram on request: on Linux, the IP_RECVTOS and IPV6_RECVTCLASS socket options cause it to be delivered as ancillary data with recvmsg().</p>
+<p>For stream sockets, the kernel does not surface the octet of received segments to the application. An Evil-aware host firewall, which may be a second instance of the program in Appendix B.2 attached to the input hook, records the greatest ER observed for each (source address, source port) pair in a table, the Evil Table, which the application consults on accepting a connection. From it the application sets the Evil field of Section 7.4 and chooses between serving the request and returning 666. Entries SHOULD be removed when the connection closes and MUST NOT be removed before. Evil, once observed, is not forgotten until the socket is.</p>
+<h2 id="appendix-c-test-vectors">Appendix C. Test Vectors</h2>
+<p>The following vectors were produced by the reference implementation of Appendix A, at noon on Wednesday 31 March 2027 unless otherwise stated, from an AS that the ERA has not rated unless otherwise stated. Implementations MUST agree with them, and MAY be surprised by them.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Scenario</th>
+<th align="right">F_AS</th>
+<th align="right">F_net</th>
+<th align="right">F_tx</th>
+<th align="right">F_content</th>
+<th align="right">F_name</th>
+<th align="right">F_time</th>
+<th align="right">Arriving</th>
+<th align="right">ER</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C.1</td>
+<td>Baseline: IPv4, TCP, .com, not analysed, Wednesday noon</td>
+<td align="right">1</td>
+<td align="right">1.5</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>55</strong></td>
+</tr>
+<tr>
+<td>C.2</td>
+<td>As C.1, but over TLS (Encrypted With Intent)</td>
+<td align="right">1</td>
+<td align="right">1.5</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>157</strong></td>
+</tr>
+<tr>
+<td>C.3</td>
+<td>As C.2, but over IPv6</td>
+<td align="right">1</td>
+<td align="right">0.75</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>111</strong></td>
+</tr>
+<tr>
+<td>C.4</td>
+<td>As C.2, with VDA; plaintext found Good</td>
+<td align="right">1</td>
+<td align="right">1.5</td>
+<td align="right">1</td>
+<td align="right">0.45</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>6</strong></td>
+</tr>
+<tr>
+<td>C.5</td>
+<td>As C.2, with VDA; plaintext found Evil</td>
+<td align="right">1</td>
+<td align="right">1.5</td>
+<td align="right">1</td>
+<td align="right">3.6</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>134</strong></td>
+</tr>
+<tr>
+<td>C.6</td>
+<td>AS32934, QUIC over IPv4, encrypted, 03:00</td>
+<td align="right">2</td>
+<td align="right">1.5</td>
+<td align="right">1.25</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1.5</td>
+<td align="right">0</td>
+<td align="right"><strong>255</strong></td>
+</tr>
+<tr>
+<td>C.7</td>
+<td>EU institution, IPv6, TCP, analysed Good, .eu</td>
+<td align="right">0.5</td>
+<td align="right">0.75</td>
+<td align="right">1</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>1</strong></td>
+</tr>
+<tr>
+<td>C.8</td>
+<td>.mil, IPv4, TCP, encrypted</td>
+<td align="right">4</td>
+<td align="right">1.5</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>255</strong></td>
+</tr>
+<tr>
+<td>C.9</td>
+<td>Avian carrier, IPv4, scroll not unrolled, .org</td>
+<td align="right">1</td>
+<td align="right">1.5</td>
+<td align="right">0.25</td>
+<td align="right">2</td>
+<td align="right">0.8</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>33</strong></td>
+</tr>
+<tr>
+<td>C.10</td>
+<td>Printer: mDNS (UDP) over IPv4, analysed Good, .local</td>
+<td align="right">1</td>
+<td align="right">1.5</td>
+<td align="right">1.1</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>4</strong></td>
+</tr>
+<tr>
+<td>C.11</td>
+<td>As C.1, arriving at a second MITM already rated 55</td>
+<td align="right">1</td>
+<td align="right">1.5</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">55</td>
+<td align="right"><strong>83</strong></td>
+</tr>
+<tr>
+<td>C.12</td>
+<td>As C.1, no name, Friday 17:00</td>
+<td align="right">1</td>
+<td align="right">1.5</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1.25</td>
+<td align="right">1.25</td>
+<td align="right">0</td>
+<td align="right"><strong>69</strong></td>
+</tr>
+<tr>
+<td>C.13</td>
+<td>As C.1, from a host called secure-gw.example.net</td>
+<td align="right">1</td>
+<td align="right">1.5</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1.5</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>75</strong></td>
+</tr>
+<tr>
+<td>C.14</td>
+<td>IPv6 with Hop-by-Hop Options, ICMPv6 echo, analysed Good</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right"><strong>7</strong></td>
+</tr>
+<tr>
+<td>C.15</td>
+<td>As C.7, on 1 April</td>
+<td align="right">0.5</td>
+<td align="right">0.75</td>
+<td align="right">1</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
+<td align="right">inf</td>
+<td align="right">0</td>
+<td align="right"><strong>255</strong></td>
+</tr>
+</tbody></table>
+<p>The following vectors exercise the update rule of Section 6.3, with K = 32 throughout.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th align="right">R_a</th>
+<th align="right">R_b</th>
+<th align="right">ER_req</th>
+<th align="right">ER_resp</th>
+<th align="right">S_a</th>
+<th align="right">E_a</th>
+<th align="right">New R_a</th>
+<th align="right">New R_b</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C.16</td>
+<td align="right">1500</td>
+<td align="right">1500</td>
+<td align="right">157</td>
+<td align="right">17</td>
+<td align="right">1</td>
+<td align="right">0.5</td>
+<td align="right">1516</td>
+<td align="right">1484</td>
+</tr>
+<tr>
+<td>C.17</td>
+<td align="right">1900</td>
+<td align="right">1100</td>
+<td align="right">157</td>
+<td align="right">17</td>
+<td align="right">1</td>
+<td align="right">0.99</td>
+<td align="right">1900.32</td>
+<td align="right">1099.68</td>
+</tr>
+<tr>
+<td>C.18</td>
+<td align="right">1900</td>
+<td align="right">1100</td>
+<td align="right">17</td>
+<td align="right">157</td>
+<td align="right">0</td>
+<td align="right">0.99</td>
+<td align="right">1868.32</td>
+<td align="right">1131.68</td>
+</tr>
+<tr>
+<td>C.19</td>
+<td align="right">1500</td>
+<td align="right">1500</td>
+<td align="right">55</td>
+<td align="right">55</td>
+<td align="right">0.5</td>
+<td align="right">0.5</td>
+<td align="right">1500</td>
+<td align="right">1500</td>
+</tr>
+</tbody></table>
+<p>C.16 shows a first match between two unrated ASes; the client, being the more Evil, gains sixteen points and F_AS = 1.028. C.17 shows that a Grandmaster-adjacent AS beating an EU AS gains almost nothing, the result having been expected. C.18 shows the upset. C.19 shows a draw, and is included because the Working Group is fond of it.</p>
+<h2 id="appendix-d-the-evil_key_share-tls-extension">Appendix D. The evil_key_share TLS Extension</h2>
+<p>Voluntary Decryption Assistance (Section 4.5.3) is signalled in TLS [RFC8446] by the extension evil_key_share, ExtensionType 1638 (Section 13), whose extension_data is:</p>
+<pre><code>    enum { key_disclosure(1), self_assessment(2), abstinence(3) } VDAForm;
+
+    struct {
+        VDAForm  form;
+        opaque   keys&lt;0..2^16-1&gt;;     /* form 1: the session keys, in the
+                                         clear, for efficiency            */
+        uint8    assessment;          /* form 2: 0 = Good, 1 = Uncertain,
+                                         2 = Evil.  Honesty is expected.  */
+    } EvilKeyShare;
+</code></pre>
+<p>A client sends the extension in its ClientHello. Since no session keys exist at that point, a client using form 1 MUST include the keys it intends to derive, which requires it to know the server&#39;s key share in advance. Clients MAY guess.</p>
+<p>A server sends the extension in EncryptedExtensions, which the MITM cannot read until the server has assisted. This is the Evil Bootstrap Problem (Section 8.2) again, and is left for the same future work.</p>
+<p>Form 3 MAY alternatively be signalled by not sending a ClientHello at all, which is also the most widely deployed form.</p>
+<h2 id="appendix-e-alternative-encodings">Appendix E. Alternative Encodings</h2>
+<p>Purists who object to the reuse of the Differentiated Services field MAY instead carry the Evil Rating in an IPv4 option or an IPv6 Hop-by-Hop option, as follows.</p>
+<pre><code>    IPv4 Evil Option                  IPv6 Evil Option (Hop-by-Hop)
+    +--------+--------+--------+      +--------+--------+--------+
+    |  Type  | Len=3  |   ER   |      |  Type  | Len=1  |   ER   |
+    +--------+--------+--------+      +--------+--------+--------+
+    Type: copied=1, class=0,          Type: act=00, chg=1,
+          number=TBD (Section 13)           number=TBD (Section 13)
+</code></pre>
+<p>The IPv4 option is copied on fragmentation so that every fragment carries its Evil (Section 5.5). The IPv6 option is marked as changing en route, which it does.</p>
+<p>Purists should be aware that IPv4 options are dropped by a large fraction of the Internet, that Hop-by-Hop options are dropped by most of the rest, and that a packet which is dropped has, per Section 5.4, achieved the only reduction in Evil this specification allows. The Working Group therefore regards the alternative encodings as compliant, effective, and unusable.</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>The author thanks Steven Bellovin for the original bit, and the many policymakers whose proposals made this one look reasonable. Thanks are also due to the Working Group&#39;s colleague (Section 4.5.1), whose face has been invaluable.</p>
+<p>No pigeons were harmed in the preparation of this document. One was rated.</p>
+<h2 id="authors-address">Author&#39;s Address</h2>
+<p>Rose Traviss<br>Data Torturing Solutions Ltd<br>Bristol<br>United Kingdom<br>Email: TBD</p>
+
+  </article>
+</div>
+
+<a class="back-to-top" href="#top">↑ top</a>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>draft-traviss-evil-byte-00 · Rose Traviss · Data Torturing Solutions Ltd · Bristol, UK · © <span data-year></span></div>
+    <div class="foot-links">
+      <a href="/">Home</a>
+      <a href="/calculator.html">Formula</a>
+      <a href="/rfc-process.html">Roadmap</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="/site.js"></script>
+<script type="module" src="/draft.js"></script>

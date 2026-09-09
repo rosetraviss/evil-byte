@@ -1,0 +1,29 @@
+table inet evil {
+    # Section 5: the MITM. Packets from the demonstration subnet are sent
+    # to a userspace MITM (Appendix B.2) on queue 666, which rates them.
+    chain forward {
+        type filter hook forward priority mangle; policy accept;
+        ip saddr 192.0.2.0/24 meta l4proto { tcp, udp } queue num 666 bypass
+        ip6 saddr 2001:db8::/32 meta l4proto { tcp, udp } queue num 666 bypass
+    }
+    # A fixed-value MITM, for demonstrations that do not need the formula.
+    # DSCP = ER >> 2, ECN = ER & 3.  ER = 0xCA (202): DSCP 0x32, ECN 2.
+    chain forward_fixed {
+        type filter hook forward priority mangle + 1; policy accept;
+        ip saddr 192.0.2.66 ip dscp set 0x32 ip ecn set 2
+        ip6 saddr 2001:db8::66 ip6 dscp set 0x32 ip6 ecn set 2
+    }
+    # Section 7: server-side enforcement below the application layer.
+    # ER >= 128 is equivalent to DSCP >= 32 (raw match shown for IPv6).
+    chain input {
+        type filter hook input priority filter; policy accept;
+        ip dscp >= 32 tcp dport 80 counter reject with tcp reset
+        @nh,4,8 >= 128 meta nfproto ipv6 tcp dport 80 counter reject with tcp reset
+    }
+    # Section 8: client-side enforcement — discard responses from Evil servers.
+    chain input_client {
+        type filter hook input priority filter + 1; policy accept;
+        ip dscp >= 32 tcp sport 80 counter drop
+        ip6 dscp >= 32 tcp sport 80 counter drop
+    }
+}

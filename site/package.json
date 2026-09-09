@@ -1,0 +1,19 @@
+{
+  "name": "evil-byte-site",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build:draft": "node scripts/build-draft.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "marked": "^16.4.1",
+    "wrangler": "^4.130.0"
+  },
+  "allowScripts": {
+    "workerd@1.20260908.1": true,
+    "esbuild@0.28.1": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "evil-byte",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-09",
+  "routes": [
+    { "pattern": "evilbyte.net", "custom_domain": true },
+    { "pattern": "www.evilbyte.net", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  "observability": {
+    "enabled": true
+  }
+}

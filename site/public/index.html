@@ -1,0 +1,119 @@
+<meta charset="utf-8">
+<title>The Evil Byte</title>
+<meta name="description" content="draft-traviss-evil-byte-00 — an eight-bit Evil Rating for the IPv4 and IPv6 headers, obsoleting the RFC 3514 evil bit. Read the draft, try the formula, and follow the road to an actual RFC.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Evil Byte">
+<meta property="og:description" content="draft-traviss-evil-byte-00 obsoletes the RFC 3514 evil bit with a full eight-bit Evil Rating, computed on the path. Read the draft and try the formula.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Evil Byte">
+<meta name="twitter:description" content="An eight-bit Evil Rating for the IPv4 and IPv6 headers. draft-traviss-evil-byte-00.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="byte">EE</span> evilbyte</a>
+    <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">menu</button>
+    <div class="nav-links">
+      <a href="/draft.html">The Draft</a>
+      <a href="/calculator.html">Formula</a>
+      <a href="/rfc-process.html">Becoming an RFC</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">draft-traviss-evil-byte-00 · Internet-Draft</p>
+    <h1>The Evil Byte</h1>
+    <p class="lede">A Security Octet for the IPv4 and IPv6 Headers. One bit was never going to be enough — this document obsoletes the <a href="https://www.rfc-editor.org/rfc/rfc3514" target="_blank" rel="noopener">RFC 3514 evil bit</a> and replaces it with a full eight-bit Evil Rating, computed on the path and enforced by everyone.</p>
+    <p class="meta-line"><strong>Obsoletes:</strong> RFC 3514 (if approved) &nbsp;·&nbsp; <strong>Intended status:</strong> Standards Track &nbsp;·&nbsp; <strong>Target:</strong> 1 April 2027</p>
+    <div class="cta-row">
+      <a class="btn btn--primary" href="/draft.html">Read the draft</a>
+      <a class="btn btn--ghost" href="/calculator.html">Try the formula</a>
+      <a class="btn btn--ghost" href="/rfc-process.html">How this becomes an RFC</a>
+    </div>
+
+    <div class="gadget" id="gadget">
+      <div class="dial" id="gadget-dial">
+        <div class="er-value" id="gadget-er">--</div>
+        <div class="er-max">/ 255</div>
+      </div>
+      <div class="gadget-body">
+        <h2>Your Evil Rating, as computed by this MITM</h2>
+        <span class="gadget-band" id="gadget-band">assessing…</span>
+        <div class="gadget-evidence" id="gadget-evidence"></div>
+        <div class="gadget-foot">
+          <button class="btn btn--ghost" id="gadget-refresh" type="button">Assess me again</button>
+        </div>
+        <p class="gadget-note">Computed live, on this request, from Section 4: your network, transport, TLS version, a real reverse-DNS lookup, and the local time at your connection. No payload was read — see Section 4.5.2.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">Abstract</h2>
+    <blockquote class="abstract">
+      <p>Firewalls, intrusion detection systems, and similar devices continue to have difficulty distinguishing packets that have malicious intent from those that are merely unusual. RFC 3514 addressed this problem by defining a security flag in the IPv4 header, the &ldquo;evil bit&rdquo;, to be set by the sender of any packet with malicious intent. Twenty-four years of operational experience have shown that senders cannot be relied upon to set it, and that a single bit cannot express the range of Evil now observed on the Internet.</p>
+      <p>This document obsoletes the evil bit and replaces it with the Evil Byte: an eight-bit Evil Rating carried in every IPv4 and IPv6 packet, computed and set not by the sender but by a Morality-Inspecting Trusted Middleman (MITM) on the path, from a weighted product of the sender's Autonomous System, choice of protocols, content, name, and the time of day. Servers reject requests from Evil clients; clients discard responses from Evil servers; and the Evil of every Autonomous System is continuously re-estimated by an Elo rating system operated by a central Evil Rating Authority.</p>
+    </blockquote>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">Design goals</h2>
+    <p class="section-sub">Five goals, from Section 1.2 of the draft.</p>
+    <div class="grid-auto">
+      <div class="card"><h3>Resolution</h3><p>Eight bits instead of one — a 128-fold improvement, or in the units of RFC 3514, seven more bits.</p></div>
+      <div class="card"><h3>Independence</h3><p>Computed by a third party on the path who has no stake in the outcome, not by the sender.</p></div>
+      <div class="card"><h3>Consequence</h3><p>Evil packets are refused, by servers and clients alike. An Evil Rating nobody acts on is just a statistic.</p></div>
+      <div class="card"><h3>Memory</h3><p>The Evil of a network accumulates over time and is shared with everyone, like a credit score.</p></div>
+      <div class="card"><h3>Incentive</h3><p>Deployment of IPv6 is rewarded, since nothing else has worked.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">What's actually in it</h2>
+    <p class="section-sub">Fourteen sections and five appendices. Some of the load-bearing parts:</p>
+    <div class="grid-3">
+      <div class="card"><h3>§4 — the formula</h3><p>ER = clamp(floor(16 × F_tamper × ∏ F_i^w_i + 0.5), 1, 255), across Autonomous System, protocol, transport, content, name, and time factors.</p></div>
+      <div class="card"><h3>§6 — the Evil Rating Authority</h3><p>A single central Elo system that rates every Autonomous System on Earth from the outcome of every exchange it hears about.</p></div>
+      <div class="card"><h3>§7 — 666 Evil</h3><p>A new HTTP 6xx status class, with a teapot-shaped fallback for servers that validate their status codes.</p></div>
+      <div class="card"><h3>Appendix A — reference implementation</h3><p>A complete, dependency-free Python module. This site's formula page is a faithful port of it.</p></div>
+      <div class="card"><h3>Appendix C — test vectors</h3><p>Nineteen worked examples, including what happens to a Meta Platforms request over QUIC at 3 a.m.</p></div>
+      <div class="card"><h3>§9 — Avian carriers</h3><p>How a MITM rates, and re-marks, a datagram taped to a pigeon.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">Get involved</h2>
+    <p class="section-sub">The draft is version -00 and has not yet been submitted to the IETF. It needs readers before it needs a sponsor.</p>
+    <div class="cta-row">
+      <a class="btn btn--primary" href="/draft.html">Read the full draft</a>
+      <a class="btn btn--ghost" href="/rfc-process.html">See the road to publication</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>draft-traviss-evil-byte-00 · Rose Traviss · Data Torturing Solutions Ltd · Bristol, UK · © <span data-year></span></div>
+    <div class="foot-links">
+      <a href="/draft.html">Draft</a>
+      <a href="/calculator.html">Formula</a>
+      <a href="/rfc-process.html">Roadmap</a>
+      <a href="https://www.rfc-editor.org/rfc/rfc3514" target="_blank" rel="noopener">RFC 3514</a>
+      <a href="https://www.rfc-editor.org/rfc/rfc1149" target="_blank" rel="noopener">RFC 1149</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="/site.js"></script>
+<script type="module" src="/gadget.js"></script>

@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evilbyte"
+dynamic = ["version"]
+description = "Reference implementation of the Evil Rating formula from draft-traviss-evil-byte-00 (obsoletes RFC 3514)"
+readme = "README.md"
+license = "BSD-3-Clause"
+authors = [{ name = "Rose Traviss" }]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Internet",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+mitm = ["scapy>=2.5", "netfilterqueue>=1.1"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+evilbyte-server = "evilbyte.server:main"
+evilbyte-client = "evilbyte.client:main"
+
+[project.urls]
+Homepage = "https://evilbyte.net"
+Draft = "https://evilbyte.net/draft.html"
+Repository = "https://github.com/rosetraviss/evil-byte"
+
+[tool.setuptools]
+package-dir = { "evilbyte" = "." }
+packages = ["evilbyte"]
+
+[tool.setuptools.package-data]
+evilbyte = ["evil.nft"]
+
+[tool.setuptools_scm]
+root = ".."
+tag_regex = "^py-v(?P<version>\\d+\\.\\d+\\.\\d+)$"
+write_to = "_version.py"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

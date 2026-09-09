@@ -1,0 +1,22 @@
+# Node / Cloudflare
+node_modules/
+.wrangler/
+.dev.vars
+
+# Python
+__pycache__/
+*.pyc
+.venv*/
+*.egg-info/
+build/
+dist/
+evil-byte-src/_version.py
+*.log
+
+# Go
+evil-byte-go/evil-byte-go
+/evil-byte-go/*.exe
+
+# OS / editor
+.DS_Store
+Thumbs.db

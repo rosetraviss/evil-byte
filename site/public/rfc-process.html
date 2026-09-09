@@ -1,0 +1,85 @@
+<meta charset="utf-8">
+<title>Becoming an RFC — The Evil Byte</title>
+<meta name="description" content="Where draft-traviss-evil-byte-00 actually stands, and what has to happen for it to become an RFC — the real IETF process, not the satirical one.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="byte">EE</span> evilbyte</a>
+    <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">menu</button>
+    <div class="nav-links">
+      <a href="/draft.html">The Draft</a>
+      <a href="/calculator.html">Formula</a>
+      <a href="/rfc-process.html" class="current">Becoming an RFC</a>
+    </div>
+  </div>
+</nav>
+
+<div class="prose wrap">
+  <p class="eyebrow">status &amp; process</p>
+  <h1>How this becomes an RFC</h1>
+  <p>The document itself is written entirely straight-faced, as an April 1 RFC should be. This page isn't — it's the actual, unglamorous IETF process draft-traviss-evil-byte-00 has to go through, and exactly how far along it currently is: <strong style="color:var(--text)">version -00, not yet submitted.</strong></p>
+</div>
+
+<section style="border-top:none; padding-top:0;">
+  <div class="wrap">
+    <h2 class="section-title">Where it stands</h2>
+    <ul class="timeline">
+      <li class="done"><p class="t-title">Internet-Draft -00 written <span class="t-status">done</span></p>
+        <p>Full text, formula, reference implementation, nftables config, and test vectors, in RFC-shaped Markdown ready for conversion to RFCXML v3.</p></li>
+      <li class="now"><p class="t-title">Public read-through <span class="t-status">in progress</span></p>
+        <p>This site. A joke RFC that nobody has read is just a Markdown file with delusions.</p></li>
+      <li><p class="t-title">Format conversion</p>
+        <p>Convert to RFCXML v3 (the format the Datatracker's submission tool expects) with a tool such as <code>kramdown-rfc</code> or <code>mmark</code>, and let it generate the plaintext and HTML renderings.</p></li>
+      <li><p class="t-title">Submit via the IETF Datatracker</p>
+        <p>Filed at <a href="https://datatracker.ietf.org/submit" target="_blank" rel="noopener">datatracker.ietf.org/submit</a> as an individual submission. The authors get an email verification request; once confirmed, it's posted and citable as <code>draft-traviss-evil-byte-00</code>.</p></li>
+      <li><p class="t-title">Independent stream or AD sponsorship</p>
+        <p>Nothing here belongs to a Working Group, so the two real paths to an RFC number are the Independent Submission Stream (reviewed by the ISE) or a sitting Area Director willing to sponsor it into the IETF stream. April 1 RFCs have gone both ways.</p></li>
+      <li><p class="t-title">RFC Editor queue &amp; April 1 timing</p>
+        <p>The RFC Editor accepts April 1 submissions from anyone, and considers them for that year's batch if they arrive properly formatted at least two weeks before the date. Everything else about the queue — AUTH48, cross-review — applies as normal.</p></li>
+      <li><p class="t-title">Publication</p>
+        <p>Targeted for 1 April 2027 — the date already sitting in the draft's own header. RFC 3514 gets obsoleted, on schedule, twenty-four years after it was filed.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">How to help</h2>
+    <p class="section-sub">In rough order of usefulness.</p>
+    <div class="help-list">
+      <div class="card"><span class="n">01</span><div><h3 style="margin-bottom:4px">Read it and find what's broken</h3><p>Formula errors, IANA registrations that don't make sense, sections that stop being funny — <a href="/draft.html">the draft</a> is a first draft.</p></div></div>
+      <div class="card"><span class="n">02</span><div><h3 style="margin-bottom:4px">Implement Appendix A or B</h3><p>Run the reference implementation, the nftables config, or the userspace MITM against real traffic. Operational experience is Section 10.4's entire content so far, and it shows.</p></div></div>
+      <div class="card"><span class="n">03</span><div><h3 style="margin-bottom:4px">Try the formula</h3><p>The <a href="/calculator.html">interactive calculator</a> is a straight port of Appendix A — a good way to find where the weights produce a silly result before a reviewer does.</p></div></div>
+      <div class="card"><span class="n">04</span><div><h3 style="margin-bottom:4px">Point people at it</h3><p>Joke RFCs live or die on whether anyone outside the author has read them before 1 April. This page exists for that reason alone.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">Further reading</h2>
+    <ul class="source-list">
+      <li><a href="https://datatracker.ietf.org/submit" target="_blank" rel="noopener">datatracker.ietf.org/submit</a> — the actual Internet-Draft submission tool.</li>
+      <li><a href="https://authors.ietf.org/submitting-your-internet-draft" target="_blank" rel="noopener">authors.ietf.org — Submitting your Internet-Draft</a> — the current, canonical author's guide.</li>
+      <li><a href="https://www.rfc-editor.org/rfc/rfc3514" target="_blank" rel="noopener">RFC 3514</a> — the evil bit, which this document proposes to obsolete.</li>
+      <li><a href="https://en.wikipedia.org/wiki/April_Fools%27_Day_Request_for_Comments" target="_blank" rel="noopener">April Fools' Day Request for Comments — Wikipedia</a> — background on the tradition and its rules.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>draft-traviss-evil-byte-00 · Rose Traviss · Data Torturing Solutions Ltd · Bristol, UK · © <span data-year></span></div>
+    <div class="foot-links">
+      <a href="/draft.html">Draft</a>
+      <a href="/calculator.html">Formula</a>
+      <a href="/rfc-process.html">Roadmap</a>
+      <a href="https://www.rfc-editor.org/rfc/rfc3514" target="_blank" rel="noopener">RFC 3514</a>
+      <a href="https://www.rfc-editor.org/rfc/rfc1149" target="_blank" rel="noopener">RFC 1149</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="/site.js"></script>

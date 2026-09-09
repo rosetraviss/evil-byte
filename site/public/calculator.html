@@ -1,0 +1,98 @@
+<meta charset="utf-8">
+<title>Formula Calculator — The Evil Byte</title>
+<meta name="description" content="An interactive, faithful port of Appendix A of draft-traviss-evil-byte-00 — compute an Evil Rating from the same six factors the reference implementation uses.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="byte">EE</span> evilbyte</a>
+    <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">menu</button>
+    <div class="nav-links">
+      <a href="/draft.html">The Draft</a>
+      <a href="/calculator.html" class="current">Formula</a>
+      <a href="/rfc-process.html">Becoming an RFC</a>
+    </div>
+  </div>
+</nav>
+
+<div class="prose wrap" style="padding-bottom:0;">
+  <p class="eyebrow">§4 &amp; Appendix A</p>
+  <h1>Compute an Evil Rating</h1>
+  <p>Six factors, each raised to its own weight and multiplied together. This runs the same arithmetic as <a href="/draft.html#appendix-a-reference-implementation">Appendix A's reference implementation</a>, in your browser — nothing here is sent anywhere.</p>
+</div>
+
+<div class="wrap calc-layout">
+  <form id="calc-form" onsubmit="return false">
+    <div class="field-group">
+      <label class="group-label" for="f-as">Autonomous System — §4.2</label>
+      <div class="field-row"><select id="f-as"></select></div>
+      <p class="field-note" id="f-as-note"></p>
+    </div>
+
+    <div class="field-group">
+      <label class="group-label" for="f-net">Network protocol — §4.3</label>
+      <div class="field-row"><select id="f-net"></select></div>
+      <p class="field-note" id="f-net-note"></p>
+    </div>
+
+    <div class="field-group">
+      <label class="group-label" for="f-tx">Transport — §4.4</label>
+      <div class="field-row"><select id="f-tx"></select></div>
+      <p class="field-note" id="f-tx-note"></p>
+    </div>
+
+    <div class="field-group">
+      <label class="group-label" for="f-content">Content — §4.5</label>
+      <div class="field-row"><select id="f-content"></select></div>
+      <label class="checkbox"><input type="checkbox" id="f-vda"> Voluntary Decryption Assistance (§4.5.3 — ×0.9 cooperation discount)</label>
+    </div>
+
+    <div class="field-group">
+      <label class="group-label" for="f-name">Nomenclature — §4.6</label>
+      <div class="field-row"><select id="f-name"></select></div>
+      <label class="checkbox"><input type="checkbox" id="f-protest"> Name contains "secure", "trust", "safe", or "legit" (floors F_name at 1.5)</label>
+    </div>
+
+    <div class="field-group">
+      <label class="group-label" for="f-time">Temporal — §4.7</label>
+      <div class="field-row"><select id="f-time"></select></div>
+      <label class="checkbox"><input type="checkbox" id="f-dst"> Daylight saving time in effect at the source (+0.1)</label>
+    </div>
+
+    <div class="field-group">
+      <label class="group-label" for="f-arriving">Arriving rating — §4.8 / §5.4</label>
+      <div class="field-row"><input type="number" id="f-arriving" min="0" max="255" value="0"></div>
+      <p class="field-note">Value already in the Evil Byte when this MITM sees the packet. 0 = fresh, i.e. Unrated on arrival.</p>
+    </div>
+  </form>
+
+  <aside class="calc-result">
+    <div class="dial" id="calc-dial"><div class="er-value" id="calc-er">--</div><div class="er-max">/ 255</div></div>
+    <div style="text-align:center; margin-bottom:14px;"><span class="gadget-band" id="calc-band"></span></div>
+    <div class="calc-math" id="calc-math"></div>
+    <ul class="calc-breakdown" id="calc-breakdown"></ul>
+  </aside>
+</div>
+
+<section>
+  <div class="wrap">
+    <p class="section-sub" style="margin:0;">ER = clamp(floor(16 × F_tamper × F_AS<sup>1.00</sup> × F_net<sup>0.50</sup> × F_tx<sup>0.25</sup> × F_content<sup>1.50</sup> × F_name<sup>0.75</sup> × F_time<sup>0.25</sup> + 0.5), 1, 255), then floored again against whatever rating the packet already carried on arrival. Full derivation in <a href="/draft.html#4-computation-of-the-evil-rating">Section 4</a>.</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>draft-traviss-evil-byte-00 · Rose Traviss · Data Torturing Solutions Ltd · Bristol, UK · © <span data-year></span></div>
+    <div class="foot-links">
+      <a href="/draft.html">Draft</a>
+      <a href="/calculator.html">Formula</a>
+      <a href="/rfc-process.html">Roadmap</a>
+      <a href="https://www.rfc-editor.org/rfc/rfc3514" target="_blank" rel="noopener">RFC 3514</a>
+      <a href="https://www.rfc-editor.org/rfc/rfc1149" target="_blank" rel="noopener">RFC 1149</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="/site.js"></script>
+<script type="module" src="/calculator.js"></script>
