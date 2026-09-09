@@ -16,9 +16,7 @@
     {
       "binding": "DB",
       "database_name": "evil-byte-telemetry",
-      // Placeholder — run `wrangler d1 create evil-byte-telemetry` (see README.md
-      // "Manual setup" in this directory) and paste the returned database_id here.
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+      "database_id": "c24f9a99-00a0-43d4-b320-d647319c2acb"
     }
   ],
   "triggers": {
