@@ -21,6 +21,7 @@ Section 4, four other things need to agree with it by dinner.
 | [`draft-traviss-evil-byte-00.xml`](draft-traviss-evil-byte-00.xml) | The same, as submission-ready RFCXML v3 |
 | [`site/`](site) | evilbyte.net — a Cloudflare Worker: the rendered draft, a live rating gadget, the formula calculator |
 | [`era/`](era) | era.evilbyte.net — the Evil Rating Authority (Section 6): an initial rating for every allocated ASN |
+| [`telemetry/`](telemetry) | telemetry.evilbyte.net — pulls real Cloudflare traffic from Log Explorer every 15 minutes and rates it with the same formula, for validating the formula against reality |
 | [`evil-byte-src/`](evil-byte-src) | Python reference implementation (`pip install evilbyte`), MITM, demo server/client |
 | [`evil-byte-go/`](evil-byte-go) | The same, in Go — interoperates with the Python side over the wire, not just on paper |
 | [`deploy/`](deploy) | A runbook and scripts for running the MITM across two real VPS, to see whether the octet survives the real Internet (Section 10.3) |

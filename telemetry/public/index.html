@@ -1,0 +1,123 @@
+<meta charset="utf-8">
+<title>Evil Byte Telemetry</title>
+<meta name="description" content="Live Evil Rating distribution across real Cloudflare traffic, computed from Log Explorer every 15 minutes — for validating draft-traviss-evil-byte-00's formula against reality.">
+<link rel="icon" href="https://evilbyte.net/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://evilbyte.net/styles.css">
+<style>
+  .bars { display:grid; gap:10px; margin:0; }
+  .bar-row { display:grid; grid-template-columns: 140px 1fr 84px; align-items:center; gap:12px; font-family:var(--mono); font-size:13px; }
+  .bar-row .label { color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-track { background:var(--bg-panel-2); border-radius:5px; height:20px; overflow:hidden; }
+  .bar-fill { display:block; height:100%; border-radius:5px; min-width:2px; transition:width .3s ease; }
+  .bar-row .value { text-align:right; color:var(--text-dim); }
+  .split-2 { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width: 700px) { .split-2 { grid-template-columns: 1fr; } }
+  .tile-label { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); margin:0 0 6px; }
+  .tile-value { font-size:1.4rem; color:var(--text); font-family:var(--mono); margin:0; }
+  .table-simple { width:100%; border-collapse:collapse; font-family:var(--mono); font-size:13px; }
+  .table-simple th, .table-simple td { text-align:left; padding:7px 10px; border-bottom:1px solid var(--border); }
+  .table-simple th { color:var(--text-faint); font-weight:600; font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; }
+  .table-simple td.num, .table-simple th.num { text-align:right; }
+  .empty-note { color:var(--text-faint); font-size:13.5px; margin:0; }
+  .caveat-list { font-size:13.5px; color:var(--text-dim); padding-left:20px; }
+  .caveat-list li { margin:8px 0; }
+</style>
+
+<nav class="site-nav" id="top">
+  <div class="wrap">
+    <a class="brand" href="https://evilbyte.net/"><span class="byte">EE</span> evilbyte</a>
+    <div class="nav-links">
+      <a href="https://evilbyte.net/draft.html">The Draft</a>
+      <a href="https://evilbyte.net/calculator.html">Formula</a>
+      <a href="https://era.evilbyte.net/">The ERA</a>
+      <a href="/" class="current">Telemetry</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">§4 · evil rating telemetry</p>
+    <h1>telemetry.evilbyte.net</h1>
+    <p class="lede">Every 15 minutes this pulls new HTTP request logs from Cloudflare Log Explorer across the account, computes an Evil Rating for each distinct requestor with the same formula <a href="https://evilbyte.net/calculator.html">the calculator</a> uses, and keeps one latest-seen row per client IP. This page is what that data actually looks like — not a demo, not a synthetic vector.</p>
+
+    <div class="grid-auto" id="stat-tiles">
+      <div class="card"><p class="empty-note">Loading…</p></div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">Rating distribution</h2>
+    <p class="section-sub">Every distinct requestor currently on file, bucketed by §3.3's bands.</p>
+    <div class="card">
+      <div class="bars" id="band-histogram"><p class="empty-note">Loading…</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">Does the formula track Cloudflare's own signals?</h2>
+    <p class="section-sub">Average Bot Management score and WAF attack score, grouped by the same bands above. Neither one is a formula input — §4.5.2's "Presumption of Evil" stands unmodified — they're recorded purely for comparison. If the Evil Rating means anything, the Evil/Saturated Evil bands should skew toward Cloudflare's own bot/attack scores too.</p>
+    <div class="split-2">
+      <div class="card">
+        <h3>Bot Management score</h3>
+        <div class="bars" id="bot-score-chart"><p class="empty-note">Loading…</p></div>
+      </div>
+      <div class="card">
+        <h3>WAF attack score</h3>
+        <div class="bars" id="waf-score-chart"><p class="empty-note">Loading…</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">Top Autonomous Systems</h2>
+    <p class="section-sub">By distinct-requestor count. F_AS comes from <a href="https://era.evilbyte.net/">the ERA</a>, not from this table.</p>
+    <div class="card">
+      <table class="table-simple" id="asn-table"><tbody><tr><td class="empty-note">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">By zone</h2>
+    <p class="section-sub">By distinct-requestor count, across every zone on the account.</p>
+    <div class="card">
+      <table class="table-simple" id="zone-table"><tbody><tr><td class="empty-note">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="section-title">Methodology &amp; known gaps</h2>
+    <p class="section-sub">This pipeline reconstructs the six factors from historical log rows, not from a live request — a few of them are necessarily approximations of what <a href="https://evilbyte.net/draft.html#5-the-morality-inspecting-trusted-middleman">the live MITM</a> would compute in the moment.</p>
+    <ul class="caveat-list">
+      <li><strong>F_time</strong> is estimated from the requestor's country (and, for a handful of large countries, region) rather than Cloudflare's own per-IP geolocation timezone — large countries spanning multiple zones (the US, Russia, Canada, Australia, Brazil) are the most likely to be misjudged near band edges.</li>
+      <li><strong>F_name</strong> reuses a reverse-DNS answer for up to 7 days rather than looking it up fresh every time, so a requestor's name factor can lag a recent PTR change.</li>
+      <li><strong>F_AS</strong> and <strong>F_name</strong> both fall back to their unrated defaults (1.0 / 1.25) when a run has too many new requestors to look all of them up in time — those rows are flagged internally and topped up on a later run.</li>
+      <li>Bot Management score, WAF attack score, and JA4 are stored for comparison only and never feed the formula.</li>
+      <li>"By zone" stays empty if this Cloudflare account's Log Explorer doesn't report a zone field on account-wide queries — see telemetry/README.md.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>evil byte telemetry · draft-traviss-evil-byte-00 · © <span data-year></span></div>
+    <div class="foot-links">
+      <a href="https://evilbyte.net/">evilbyte.net</a>
+      <a href="https://era.evilbyte.net/">era.evilbyte.net</a>
+      <a href="https://github.com/rosetraviss/evil-byte" target="_blank" rel="noopener">Source</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="https://evilbyte.net/site.js"></script>
+<script type="module" src="/dashboard.js"></script>

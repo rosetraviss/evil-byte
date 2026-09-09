@@ -1,0 +1,160 @@
+// Worker for telemetry.evilbyte.net.
+//
+// Every 15 minutes (Cron Trigger, see wrangler.jsonc), pulls new
+// http_requests rows from Cloudflare's Log Explorer across the whole
+// account, computes an Evil Rating for each distinct requestor using the
+// real formula (site/public/evil-formula.mjs, imported — not
+// reimplemented), and upserts one latest-seen row per client IP into D1.
+// Serves a small dashboard over that data at /.
+//
+// This is the batch counterpart to site/src/index.js's live /api/rate: same
+// formula, same ERA, same reverse-DNS approach, but reconstructed from
+// historical log rows instead of a live request — see fieldmap.js and the
+// approved plan's field-mapping table for exactly where the two
+// necessarily diverge (F_time and, to a lesser extent, F_name).
+
+import { fetchRequestLogs } from "./logs.js";
+import { computeFactors } from "./fieldmap.js";
+import { queryEra } from "./era-client.js";
+import { resolveReverseName } from "./rdns.js";
+import { readCursor, writeCursorAndStats, upsertRequestors } from "./db.js";
+
+const ROW_LIMIT_PER_RUN = 4000;
+const ERA_LOOKUP_BUDGET = 400;
+const RDNS_LOOKUP_BUDGET = 400;
+const ENRICHMENT_CONCURRENCY = 25;
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    if (url.pathname === "/api/stats" && request.method === "GET") {
+      return handleStats(env);
+    }
+    return env.ASSETS.fetch(request);
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runExtraction(env));
+  },
+};
+
+function makeBudget(limit) {
+  let spent = 0;
+  return { spend: () => (spent < limit ? (++spent, true) : false) };
+}
+
+// Bounded-concurrency fan-out: running enrichment lookups fully sequentially
+// can exceed the Cron Trigger's 15-minute wall-clock cap on a busy account
+// (hundreds of 800ms/1500ms-timeout fetches add up); running them all at
+// once as a single Promise.all risks the same subrequest spike. A modest
+// concurrency window keeps worst-case wall time to tens of seconds.
+async function mapWithConcurrency(items, limit, fn) {
+  const results = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const i = next++;
+      results[i] = await fn(items[i], i);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
+export async function runExtraction(env) {
+  const since = await readCursor(env.DB);
+
+  let rows;
+  try {
+    rows = await fetchRequestLogs(env, { sinceIso: since, limit: ROW_LIMIT_PER_RUN });
+  } catch (err) {
+    // Cursor stays put — the next tick just retries this same window.
+    console.error("telemetry: Log Explorer fetch failed:", err);
+    return;
+  }
+
+  if (rows.length === 0) {
+    await writeCursorAndStats(env.DB, { cursorIso: since, rowsSeen: 0, rowsCapped: false });
+    return;
+  }
+
+  // Latest-seen dedup, end to end: ascending timestamp order means later
+  // rows for the same IP overwrite earlier ones here, before anything
+  // touches D1 (the upsert only needs to apply "latest wins" once more,
+  // against whatever was already stored from a previous run).
+  rows.sort((a, b) => (a.edgestarttimestamp < b.edgestarttimestamp ? -1 : 1));
+  const byIp = new Map();
+  for (const row of rows) byIp.set(row.clientip, row);
+  const distinctRows = [...byIp.values()];
+
+  const eraCache = new Map();
+  const eraBudget = makeBudget(ERA_LOOKUP_BUDGET);
+  const rdnsBudget = makeBudget(RDNS_LOOKUP_BUDGET);
+
+  const records = await mapWithConcurrency(distinctRows, ENRICHMENT_CONCURRENCY, async (row) => {
+    const asn = row.clientasn != null ? Number(row.clientasn) : null;
+    let eraResult = null;
+    let asFallback = false;
+    if (asn != null) {
+      if (eraCache.has(asn) || eraBudget.spend()) {
+        eraResult = await queryEra(asn, eraCache);
+      } else {
+        asFallback = true;
+      }
+    }
+
+    const { reverseName, fallback: nameFallback } = await resolveReverseName(row.clientip, env.DB, rdnsBudget);
+
+    return computeFactors(row, { eraResult, reverseName, asFallback, nameFallback });
+  });
+
+  await upsertRequestors(env.DB, records);
+
+  const rowsCapped = rows.length === ROW_LIMIT_PER_RUN;
+  const newCursor = rows[rows.length - 1].edgestarttimestamp;
+  await writeCursorAndStats(env.DB, { cursorIso: newCursor, rowsSeen: rows.length, rowsCapped });
+}
+
+async function handleStats(env) {
+  const db = env.DB;
+  const [bandCounts, signalCorrelation, topAsns, byZone, health, totals] = await Promise.all([
+    db.prepare("SELECT band, COUNT(*) AS count FROM requestors GROUP BY band").all(),
+    db
+      .prepare(
+        `SELECT band, AVG(bot_score) AS avg_bot_score, AVG(waf_attack_score) AS avg_waf_score, COUNT(*) AS count
+         FROM requestors GROUP BY band`
+      )
+      .all(),
+    db
+      .prepare(
+        `SELECT asn, COUNT(*) AS count, AVG(er) AS avg_er FROM requestors
+         WHERE asn IS NOT NULL GROUP BY asn ORDER BY count DESC LIMIT 20`
+      )
+      .all(),
+    db
+      .prepare(
+        `SELECT zone_name, COUNT(*) AS count FROM requestors
+         WHERE zone_name IS NOT NULL GROUP BY zone_name ORDER BY count DESC LIMIT 20`
+      )
+      .all(),
+    db.prepare("SELECT * FROM extraction_state WHERE id = 1").first(),
+    db
+      .prepare(
+        `SELECT COUNT(*) AS total, SUM(f_as_is_fallback) AS as_fallback_count, SUM(f_name_is_fallback) AS name_fallback_count
+         FROM requestors`
+      )
+      .first(),
+  ]);
+
+  return Response.json(
+    {
+      bandCounts: bandCounts.results,
+      signalCorrelation: signalCorrelation.results,
+      topAsns: topAsns.results,
+      byZone: byZone.results,
+      totals,
+      health: health || null,
+    },
+    { headers: { "cache-control": "no-store", "content-type": "application/json; charset=utf-8" } }
+  );
+}

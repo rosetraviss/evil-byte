@@ -1,0 +1,13 @@
+# Copy to .dev.vars (gitignored) for local `wrangler dev`.
+# In production these are set as Worker secrets by
+# .github/workflows/deploy-telemetry.yml, not committed anywhere.
+
+# Read-only Cloudflare API token scoped to Logs / Log Explorer.
+# See telemetry/README.md "Manual setup" for how to create it.
+LOGS_API_TOKEN=
+
+# The Cloudflare account ID that owns the zones to extract from. Not
+# secret, but kept out of wrangler.jsonc for consistency with how the rest
+# of this repo already treats it (see CLOUDFLARE_ACCOUNT_ID in the
+# deploy-*.yml workflows).
+CF_ACCOUNT_ID=
