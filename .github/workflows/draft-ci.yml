@@ -1,0 +1,38 @@
+name: Draft
+
+on:
+  push:
+    branches: [main]
+    paths: ["draft-traviss-evil-byte-00.md", "draft-traviss-evil-byte-00.xml", "scripts/build-rfcxml.mjs"]
+  pull_request:
+    paths: ["draft-traviss-evil-byte-00.md", "draft-traviss-evil-byte-00.xml", "scripts/build-rfcxml.mjs"]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - run: npm ci
+      - run: pip install xml2rfc
+
+      - name: Regenerate RFCXML from the Markdown source
+        run: npm run build:rfcxml
+
+      - name: Fail if the checked-in XML is stale
+        run: git diff --exit-code draft-traviss-evil-byte-00.xml
+
+      # xml2rfc exits non-zero on structural errors (invalid anchors,
+      # dangling xrefs, malformed XML). Warnings (line width, etc.) pass.
+      - name: Validate against the real IETF toolchain
+        run: |
+          xml2rfc draft-traviss-evil-byte-00.xml --text -o /tmp/draft.txt
+          xml2rfc draft-traviss-evil-byte-00.xml --html -o /tmp/draft.html
