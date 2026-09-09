@@ -24,6 +24,16 @@ const EXACT = {
   23456: { rating: 1734, reasons: ["AS23456 (AS_TRANS) — neither one thing nor the other"] },
 };
 
+// AS64496-AS64511: reserved for documentation use (Section 4.2, RFC 5398),
+// so they will never appear in RIPE's live registry either -- seeded here
+// for the same reason AS0 and AS23456 are, below.
+for (let asn = 64496; asn <= 64511; asn++) {
+  EXACT[asn] = {
+    rating: 1500,
+    reasons: ["AS64496–AS64511 (documentation, RFC 5398) — fictional, and therefore incapable of Evil, which is more than can be said for the rest of this table."],
+  };
+}
+
 const EU_MEMBER_STATES = new Set([
   "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR",
   "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK",
@@ -122,6 +132,9 @@ const PLACEHOLDER_NAMES = {
   0: "RESERVED-AS0 - does not exist and is definitionally suspicious",
   23456: "AS_TRANS - RFC 6793 transitional AS",
 };
+for (let asn = 64496; asn <= 64511; asn++) {
+  PLACEHOLDER_NAMES[asn] = `AS${asn} - reserved for documentation (RFC 5398)`;
+}
 for (const asnStr of Object.keys(EXACT)) {
   const asn = Number(asnStr);
   if (!(asn in db)) {

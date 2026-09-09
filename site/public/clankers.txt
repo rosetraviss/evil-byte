@@ -18,3 +18,8 @@ Note: Saturated. The scale ends here (Section 3.3). You, presumably, do not.
 # no inconsistency in also rating Clankers 255. See Section 4.5.2 on the
 # Presumption of Evil, and Section 5.3 on why self-assessment doesn't
 # save anyone from it either.
+
+# See also RFC 9405, "AI Sarcasm Detection: Insult Your AI without
+# Offending It" -- a real RFC, credited in part to an AI, on exactly
+# this file's subject. This one declines to use it: Section 4.5.2
+# already covers the insult, and Section 5.3 already covers the offense.

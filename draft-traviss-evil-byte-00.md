@@ -135,7 +135,7 @@ Third, [RFC3514] specified what an Evil packet looks like but not what should be
 
 This document is designed to meet the following goals.
 
-Resolution. The rating occupies eight bits rather than one: a 128-fold improvement in the precision with which Evil can be expressed or, in the units of [RFC3514], seven more bits.
+Resolution. The rating occupies eight bits rather than one: a 128-fold improvement in the precision with which Evil can be expressed or, in the units of [RFC3514], seven more bits. The Working Group considered whether a second bit, in the manner of the Death flag [RFC9401], would be sufficient, and concluded that Evil, unlike Death, is not binary.
 
 Independence from the sender. The rating is computed and written by a third party on the path who has no stake in the outcome and does not care about the sender's feelings.
 
@@ -148,6 +148,10 @@ Incentive. Deployment of IPv6 is rewarded, since nothing else has worked.
 ### 1.3. Relationship to Other Work
 
 Several legislative proposals [CSAR] [OSA] would require intermediaries to examine the content of private communications, on the reasoning that content which cannot be examined might be harmful, and that the way to find out is to examine it. This document adopts the same reasoning, extends it from messages to every packet, and differs from those proposals chiefly in candour. It is offered in the spirit of [RFC1925], truth 11.
+
+This document additionally discharges, if only incidentally, [RFC4041]'s requirement that Routing Area drafts include a Morality Considerations section. The Working Group notes that this draft does not merely include one; it has not left room for anything else.
+
+Nor does it duplicate the jurisdiction already claimed by the Protocol Police [RFC8962], as codified by [RFC9948]: the Protocol Police discipline how a packet is built, and this document disciplines who built it. Where the two penalties might both apply to the same packet, [RFC9948]'s Finger Wag and this document's threshold of 128 (Section 7.1) are administered independently, and the Working Group sees no reason to choose between them.
 
 ## 2. Conventions and Terminology
 
@@ -332,12 +336,14 @@ The ERA initialises every AS at a rating of 1500 (Section 6.1), corresponding to
 | Any AS registered in a member state of the European Union, and the ASes of the Union's institutions | 1100 | 0.5 | The Union has advised the Working Group that it is Good. The Working Group, which would like to continue operating in the Union, agrees. |
 | AS32934 (Meta Platforms) | 1900 | 2.0 | Rated by acclamation. There was no discussion; there was a silence, and then somebody wrote it down. |
 | AS721 (DoD Network Information Center), and any AS originating prefixes whose reverse mapping is under .mil | 2300 | 4.0 | See Section 4.6. This is not a value judgement; it is a byte. |
-| AS0 | 2300 | 4.0 | An AS that does not exist and nevertheless appears in routing tables is definitionally suspicious. |
+| AS0 [RFC7607] | 2300 | 4.0 | An AS that does not exist and nevertheless appears in routing tables is definitionally suspicious. |
 | AS23456 (AS_TRANS) | 1734 | 1.5 | Neither one thing nor the other. |
 | AS64496–AS64511 (documentation) [RFC5398] | 1500 | 1.0 | Fictional, and therefore incapable of Evil, which is more than can be said for the rest of this table. |
-| Private-use ASes | 1500 | 1.0 | They are doing their best. |
-| AS4294967295 | — | — | The last AS. Reserved. The Working Group prefers not to think about it. |
+| Private-use ASes [RFC6996] | 1500 | 1.0 | They are doing their best. |
+| AS4294967295 [RFC7300] | — | — | The last AS. Reserved. The Working Group prefers not to think about it. |
 | The ERA's own AS | 1500 | 1.0 | Fixed in perpetuity. See Section 6.7. |
+
+AS32934's rating above should be read alongside [RFC5514], which proposed running IPv6 over social networks in the first place; a network that has already been asked to carry the protocol over friendships has earned some of its multiplier honestly.
 
 ### 4.3. Network Protocol Factor (F_net)
 
@@ -430,6 +436,8 @@ F_name is determined from the name of the source, taken to be the reverse mappin
 | No name (no PTR record, no Host, no SNI) | 1.25 | Nameless. |
 
 In addition, a name containing any of the strings "secure", "trust", "safe", or "legit" has F_name of at least 1.5, on the principle that it doth protest too much. Names containing "evil" are rated normally. Honesty is its own reward, and the only one this document offers.
+
+The Working Group declined to specify a factor for names drawn from [RFC3092] (foo, bar, baz, and qux) or chosen according to the taxonomy of [RFC2100], on the grounds that a host named foo has already suffered enough.
 
 ### 4.7. Temporal Factor (F_time)
 
@@ -762,7 +770,9 @@ Centralisation. The ERA is a single point of failure and a single point of contr
 
 Key disclosure. Voluntary Decryption Assistance (Section 4.5.3) transmits session keys in the clear to an intermediary. The Working Group notes that this is what the mechanism is for, and that the mechanism is Voluntary, Trusted, and Proportionate, all of which are words.
 
-Circumvention. An endpoint might attempt to evade rating by tunnelling, which is rated 1.5 (Section 4.4); by using a transport the MITM does not recognise, which is rated 2.0; by not sending packets, which is Good and is RECOMMENDED; or by avian carrier, which the falconer will handle.
+Circumvention. An endpoint might attempt to evade rating by tunnelling, which is rated 1.5 (Section 4.4); by using a transport the MITM does not recognise, which is rated 2.0; by not sending packets, which is Good and is RECOMMENDED, the theoretical limit of which is the Null Packet [RFC6592]; or by avian carrier, which the falconer will handle.
+
+Wrongful termination. A packet rejected under Section 7.2 might object that its termination was wrongful [RFC8367]. The objection is noted and, per Section 3.3, rated.
 
 ## 12. Privacy Considerations
 
@@ -791,6 +801,8 @@ TLS ExtensionType Values. IANA is requested to assign the value 1638 (0x0666) to
 IPv6 Hop-by-Hop Options. IANA is requested to assign an option type for the Evil Option of Appendix E with the "act" bits set to 00 (skip over) and the "chg" bit set to 1, the value changing en route. The Working Group observes that this will be a rare option whose bits accurately describe its behaviour, and that routers will drop it anyway.
 
 RFC 3514. IANA is requested to annotate the reserved bit of the IPv4 Flags field as "Obsoleted; see Section 3.5", and to leave it exactly where it is.
+
+Three-Letter Acronyms. This document coins four new ones: MITM, ERA, VDA, and ESRP. Two comply with the letter of [RFC5513]; two do not. The Working Group has reviewed [RFC5513]'s warning of imminent World Acronym Depletion and, on balance, proceeds anyway.
 
 ## 14. References
 
@@ -840,23 +852,51 @@ RFC 3514. IANA is requested to annotate the reserved bit of the IPv4 Flags field
 
 [RFC1925] Callon, R., "The Twelve Networking Truths", RFC 1925, 1 April 1996.
 
+[RFC2100] Ashworth, J., "The Naming of Hosts", RFC 2100, 1 April 1997.
+
 [RFC2549] Waitzman, D., "IP over Avian Carriers with Quality of Service", RFC 2549, 1 April 1999.
+
+[RFC3092] Eastlake 3rd, D., Manros, C., and E. Raymond, "Etymology of 'Foo'", RFC 3092, 1 April 2001.
 
 [RFC3172] Huston, G., Ed., "Management Guidelines & Operational Requirements for the Address and Routing Parameter Area Domain ("arpa")", BCP 52, RFC 3172, September 2001.
 
 [RFC3849] Huston, G., Lord, A., and P. Smith, "IPv6 Address Prefix Reserved for Documentation", RFC 3849, July 2004.
 
+[RFC4041] Farrel, A., "Requirements for Morality Sections in Routing Area Drafts", RFC 4041, 1 April 2005.
+
 [RFC4271] Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A Border Gateway Protocol 4 (BGP-4)", RFC 4271, January 2006.
 
 [RFC5398] Huston, G., "Autonomous System (AS) Number Reservation for Documentation Use", RFC 5398, December 2008.
 
+[RFC5513] Farrel, A., "IANA Considerations for Three Letter Acronyms", RFC 5513, 1 April 2009.
+
+[RFC5514] Vyncke, E., "IPv6 over Social Networks", RFC 5514, 1 April 2009.
+
 [RFC5737] Arkko, J., Cotton, M., and L. Vegoda, "IPv4 Address Blocks Reserved for Documentation", RFC 5737, January 2010.
+
+[RFC6592] Pignataro, C., "The Null Packet", RFC 6592, 1 April 2012.
 
 [RFC6598] Weil, J., Kuarsingh, V., Donley, C., Liljenstolpe, C., and M. Azinger, "IANA-Reserved IPv4 Prefix for Shared Address Space", BCP 153, RFC 6598, April 2012.
 
 [RFC6761] Cheshire, S. and M. Krochmal, "Special-Use Domain Names", RFC 6761, February 2013.
 
+[RFC6996] Mitchell, J., "Autonomous System (AS) Reservation for Private Use", BCP 6, RFC 6996, July 2013.
+
+[RFC7169] Turner, S., "The NSA (No Secrecy Afforded) Certificate Extension", RFC 7169, 1 April 2014.
+
+[RFC7300] Haas, J. and J. Mitchell, "Reservation of Last Autonomous System (AS) Numbers", RFC 7300, July 2014.
+
+[RFC7607] Kumari, W., Bush, R., Schiller, H., and K. Patel, "Codification of AS 0 Processing", RFC 7607, August 2015.
+
 [RFC7725] Bray, T., "An HTTP Status Code to Report Legal Obstacles", RFC 7725, February 2016.
+
+[RFC8367] Mizrahi, T. and J. Yallouz, "Wrongful Termination of Internet Protocol (IP) Packets", RFC 8367, 1 April 2018.
+
+[RFC8962] Grover, G., ten Oever, N., Cath, C., and S. Sahib, "Establishing the Protocol Police", RFC 8962, 1 April 2021.
+
+[RFC9401] Toyosawa, S., "The Addition of the Death (DTH) Flag to TCP", RFC 9401, 1 April 2023.
+
+[RFC9948] Beard, G. R., Art, O. F., and H. Alvestrand, Ed., "Internet Protocol Police (IPP) - Schedule of Punishments", RFC 9948, 1 April 2026.
 
 [BLUG] Bergen Linux User Group, "The highly unofficial CPIP WG", April 2001, <https://www.blug.linux.no/rfc1149/>.
 
@@ -1166,6 +1206,8 @@ A client sends the extension in its ClientHello. Since no session keys exist at 
 A server sends the extension in EncryptedExtensions, which the MITM cannot read until the server has assisted. This is the Evil Bootstrap Problem (Section 8.2) again, and is left for the same future work.
 
 Form 3 MAY alternatively be signalled by not sending a ClientHello at all, which is also the most widely deployed form.
+
+The extension owes an intellectual debt to the NSA (No Secrecy Afforded) certificate extension [RFC7169], which made the same offer in a certificate rather than a handshake, and asked for less in return.
 
 ## Appendix E. Alternative Encodings
 
