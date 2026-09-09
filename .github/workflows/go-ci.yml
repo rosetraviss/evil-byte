@@ -1,0 +1,53 @@
+name: Go
+
+on:
+  push:
+    branches: [main]
+    paths: ["evil-byte-go/**", ".github/workflows/go-ci.yml"]
+    tags: ["evil-byte-go/v*.*.*"]
+  pull_request:
+    paths: ["evil-byte-go/**", ".github/workflows/go-ci.yml"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.27"
+          cache-dependency-path: evil-byte-go/go.sum
+
+      - name: Vet
+        working-directory: evil-byte-go
+        run: go vet ./...
+
+      # Runs on ubuntu-latest (linux/amd64), so cmd/mitm (go:build linux)
+      # is included here, same as it will be on the VPS it's meant for.
+      - name: Build
+        working-directory: evil-byte-go
+        run: go build ./...
+
+      - name: Test against Appendix C
+        working-directory: evil-byte-go
+        run: go test -v ./...
+
+  # go.mod lives in a subdirectory, so a tag consumers can `go get` needs
+  # the evil-byte-go/ prefix (see https://go.dev/ref/mod#vcs-version).
+  # There is nothing to "publish": pushing the tag *is* the release, and
+  # the Go module proxy picks it up from the public repo automatically.
+  # This job just confirms the tagged commit actually builds before
+  # anyone runs `go get` against it.
+  verify-release-tag:
+    if: startsWith(github.ref, 'refs/tags/evil-byte-go/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.27"
+          cache-dependency-path: evil-byte-go/go.sum
+      - working-directory: evil-byte-go
+        run: go build ./... && go test ./...

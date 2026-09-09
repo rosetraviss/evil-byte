@@ -34,16 +34,17 @@ Draft = "https://evilbyte.net/draft.html"
 Repository = "https://github.com/rosetraviss/evil-byte"
 
 [tool.setuptools]
-package-dir = { "evilbyte" = "." }
-packages = ["evilbyte"]
+package-dir = { "" = "src" }
 
-[tool.setuptools.package-data]
-evilbyte = ["evil.nft"]
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools_scm]
 root = ".."
 tag_regex = "^py-v(?P<version>\\d+\\.\\d+\\.\\d+)$"
-write_to = "_version.py"
+# Relative to `root`, not to this file: lands at src/evilbyte/_version.py.
+write_to = "evil-byte-src/src/evilbyte/_version.py"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--import-mode=importlib"

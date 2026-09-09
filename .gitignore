@@ -10,7 +10,7 @@ __pycache__/
 *.egg-info/
 build/
 dist/
-evil-byte-src/_version.py
+evil-byte-src/src/evilbyte/_version.py
 *.log
 
 # Go

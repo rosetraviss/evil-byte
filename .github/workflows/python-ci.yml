@@ -1,0 +1,73 @@
+name: Python
+
+on:
+  push:
+    branches: [main]
+    paths: ["evil-byte-src/**", ".github/workflows/python-ci.yml"]
+    tags: ["py-v*.*.*"]
+  pull_request:
+    paths: ["evil-byte-src/**", ".github/workflows/python-ci.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # setuptools_scm needs tag history
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        working-directory: evil-byte-src
+        run: pip install -e ".[dev]"
+
+      - name: Test against Appendix C
+        working-directory: evil-byte-src
+        run: pytest -v
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Build sdist and wheel
+        working-directory: evil-byte-src
+        run: |
+          pip install build
+          python -m build
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: evilbyte-dist
+          path: evil-byte-src/dist/
+
+  # Publishes a py-vX.Y.Z tag to PyPI via Trusted Publishing (no stored
+  # token). Configure this repo/workflow as a trusted publisher for the
+  # "evilbyte" project at https://pypi.org/manage/project/evilbyte/settings/publishing/
+  publish:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/py-v')
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # required for Trusted Publishing
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: evilbyte-dist
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1

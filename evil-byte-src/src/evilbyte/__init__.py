@@ -115,3 +115,9 @@ def elo_update(r_a, r_b, er_req, er_resp, n_a=30, n_b=30):
     k = min(k_factor(r_a, n_a), k_factor(r_b, n_b))   # Section 6.3.1
     return (r_a + k * (s_a - e_a),
             r_b + k * ((1.0 - s_a) - (1.0 - e_a)))
+
+
+try:
+    from evilbyte._version import version as __version__
+except ImportError:  # pragma: no cover - not built from a git checkout
+    __version__ = "0+unknown"

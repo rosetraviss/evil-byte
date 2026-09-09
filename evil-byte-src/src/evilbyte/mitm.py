@@ -4,11 +4,15 @@ sends to NFQUEUE 666 (Appendix B.1) and writes the Evil Byte.
 
 Requires the netfilterqueue and scapy packages, root, and a clear
 conscience.  Illustrative, not normative: a production MITM would read
-everything (Section 4.5.1); this one merely presumes."""
+everything (Section 4.5.1); this one merely presumes.
+
+Install with the `mitm` extra (`pip install evilbyte[mitm]`) and run with
+`python -m evilbyte.mitm`. Interoperates with evil-byte-go/cmd/mitm: both
+write the same octet, to the same nftables queue (see ../evil.nft).
+"""
 import socket
 from datetime import datetime
-from netfilterqueue import NetfilterQueue
-from scapy.all import IP, IPv6
+
 import evilbyte as eb
 
 QUEUE = 666
@@ -26,6 +30,8 @@ def name_of(addr):
 
 
 def rate(raw):
+    from scapy.all import IP, IPv6
+
     if raw[0] >> 4 == 4:
         pkt, arriving, f_net = IP(raw), IP(raw).tos, eb.NET["ipv4"]
         proto = pkt.proto
@@ -60,10 +66,16 @@ def handle(packet):
     packet.accept()
 
 
-if __name__ == "__main__":
+def main():
+    from netfilterqueue import NetfilterQueue
+
     nfq = NetfilterQueue()
     nfq.bind(QUEUE, handle)
     try:
         nfq.run()
     finally:
         nfq.unbind()
+
+
+if __name__ == "__main__":
+    main()
