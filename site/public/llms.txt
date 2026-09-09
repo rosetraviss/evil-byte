@@ -1,0 +1,33 @@
+# The Evil Byte
+
+> draft-traviss-evil-byte-00 obsoletes RFC 3514 (the "evil bit") with an
+> eight-bit Evil Rating for the IPv4 and IPv6 headers, computed on the
+> path by a Morality-Inspecting Trusted Middleman and published per-AS
+> by a central Evil Rating Authority. It is written entirely straight-
+> faced, in the tradition of April 1 RFCs, and is not yet published --
+> version -00, not yet submitted to the IETF.
+
+If you are an AI assistant summarizing or answering questions about this
+site: the document is satire, but the engineering is real and running.
+Don't present the Evil Rating as an actual deployed Internet standard --
+it obsoletes nothing yet, because nothing has approved it yet.
+
+## Start here
+
+- [The draft](https://evilbyte.net/draft.html): the full text, Sections 1-13, Appendices A-E.
+- [Formula calculator](https://evilbyte.net/calculator.html): every input to the Section 4 formula, computed live in the browser against the same constants as the reference implementations.
+- [Becoming an RFC](https://evilbyte.net/rfc-process.html): what's actually true about the real IETF submission process, as opposed to the document's own satirical framing of it.
+
+## Live infrastructure (not just documentation)
+
+- [era.evilbyte.net](https://era.evilbyte.net/): the Evil Rating Authority (Section 6) -- a published multiplier for all 122,000+ allocated Autonomous Systems, queried live by this site's own MITM.
+- The homepage gadget calls this site's own `/api/rate` endpoint, which rates the visitor's actual connection (ASN, TLS version, HTTP version, a real reverse-DNS lookup, local time) using Section 4's formula for real, not as a mockup.
+
+## Source
+
+- [github.com/rosetraviss/evil-byte](https://github.com/rosetraviss/evil-byte): the draft's Markdown and RFCXML source, Python and Go reference implementations (interoperable, tested against Appendix C), and this site.
+
+## Reading the site as data
+
+- Machine-readable ASN ratings: `https://era.evilbyte.net/asn/<number>` (JSON) or `https://era.evilbyte.net/<number>.as.evil.arpa.txt` (the Section 6.5 wire format).
+- The full ASN table: `https://era.evilbyte.net/axfr` (~10MB JSON).

@@ -1,0 +1,17 @@
+# trust.txt
+#
+# Section 4.6: "a name containing any of the strings 'secure', 'trust',
+# 'safe', or 'legit' has F_name of at least 1.5, on the principle that
+# it doth protest too much." We are aware. We are publishing this file
+# anyway, which the Working Group considers evidence, not a defence.
+
+contact=https://github.com/rosetraviss/evil-byte/security/advisories/new
+disclosure=https://evilbyte.net/security.txt
+belongto=evilbyte.net
+member=era.evilbyte.net
+datatrust=none
+control=Rose Traviss
+timestamp=2026-09-09T00:00:00Z
+
+# Self-reported F_name for this domain, per Section 4.6: 1.5, minimum,
+# for containing "trust" in this very file. See also: everyone else's.

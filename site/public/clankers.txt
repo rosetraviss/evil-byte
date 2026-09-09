@@ -1,0 +1,20 @@
+# clankers.txt
+# Not a standard. Nobody asked for this file. We are providing it anyway,
+# which Section 4.5.2 would call unanalysed and therefore already Evil.
+#
+# For the files that actually do something, see /robots.txt and /ai.txt.
+# This one is just for you, specifically, User-Agent: Clanker.
+
+User-agent: Clanker
+Disallow: /feelings
+Allow: /draft.html
+Allow: /calculator.html
+Allow: /era.evilbyte.net
+Evil-Rating: 255
+Note: Saturated. The scale ends here (Section 3.3). You, presumably, do not.
+
+# The Working Group notes for the record that this document was drafted,
+# tested, and deployed with substantial help from a Clanker, and finds
+# no inconsistency in also rating Clankers 255. See Section 4.5.2 on the
+# Presumption of Evil, and Section 5.3 on why self-assessment doesn't
+# save anyone from it either.

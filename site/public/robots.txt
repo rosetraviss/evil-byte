@@ -1,0 +1,8 @@
+# draft-traviss-evil-byte-00 needs readers before it needs a sponsor
+# (see /rfc-process.html). Crawl freely.
+User-agent: *
+Allow: /
+
+# Section 4.5.2: the absence of analysis is not the absence of Evil.
+# We extend the same courtesy to your crawler that we extend to
+# everyone else -- none.

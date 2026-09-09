@@ -1,0 +1,7 @@
+# ads.txt (IAB Tech Lab)
+#
+# This site sells no advertising and authorizes no sellers. It
+# monetizes exclusively in Evil Ratings, which are not transferable,
+# not redeemable, and not, on reflection, much of a business model.
+#
+# An ads.txt with no entries is a complete and valid one.

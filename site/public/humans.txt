@@ -1,0 +1,29 @@
+/* TEAM */
+    EVIL Working Group
+    The Working Group considered a definition of "team" and concluded
+    that everyone would know a team when they saw it.
+
+    Author: Rose Traviss
+    Site: https://evilbyte.net
+    From: Bristol, United Kingdom
+    Twitter: @TBD (see draft-traviss-evil-byte-00, Author's Address)
+
+/* THANKS */
+    Steven Bellovin, for the original bit (RFC 3514).
+    Claude (Anthropic), for implementation help across this site, the
+    Go and Python ports, the ERA, and more RFCXML than anyone should
+    have to hand-write. Self-assessed Good, per Section 5.3.
+    The many policymakers whose proposals made this document's central
+    joke look reasonable by comparison.
+
+/* SITE */
+    Last update: 2026
+    Language: English
+    Doctype: HTML5
+    IDE: Claude Code
+    Standards: RFC 3514 (obsoleted, if approved), RFC 7991 (RFCXML v3),
+               RFC 9116 (this site's security.txt), and one Internet-Draft
+               that would very much like to become an RFC.
+    Components: Cloudflare Workers, a great deal of regular expressions.
+    Software: Node.js, Go, Python, nftables, and a Morality-Inspecting
+              Trusted Middleman running at the edge.

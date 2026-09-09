@@ -1,0 +1,13 @@
+# security.txt (RFC 9116)
+# This file is real. Everything else on this site is a Working Group's
+# idea of a joke. These are not mutually exclusive.
+
+Contact: https://github.com/rosetraviss/evil-byte/security/advisories/new
+Expires: 2027-04-01T00:00:00.000Z
+Canonical: https://evilbyte.net/.well-known/security.txt
+Preferred-Languages: en
+Policy: https://github.com/rosetraviss/evil-byte/blob/main/SECURITY.md
+
+# Please do not set your own Evil Rating (Section 5.3: "A host MUST NOT
+# set its own Evil Byte"). Report the finding instead, and let the MITM
+# decide.
