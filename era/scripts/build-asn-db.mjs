@@ -36,19 +36,20 @@ const CHARITY_PATTERNS = [
   /\bHUMANITARIAN\b/i, /\bRELIEF\b/i, /\bFOOD\s?BANK\b/i, /\bFOR\s?GOOD\b/i,
 ];
 const PROTEST_PATTERNS = [/\bSECURE\b/i, /\bTRUST(ED|WORTHY)?\b/i, /\bSAFE\b/i, /\bLEGIT/i];
+const UNIVERSITY_PATTERNS = [
+  /\bUNIVERSIT/i, /\bCOLLEGE\b/i, /\bINSTITUTE OF TECHNOLOGY\b/i,
+  /\bPOLYTECHNIC/i, /\bACADEM(Y|IC)\b/i, /\bSCHOOL OF\b/i,
+];
 
 function scoreEntry(asn, name, country) {
   if (EXACT[asn]) return EXACT[asn];
 
-  if (country === "EU" || EU_MEMBER_STATES.has(country)) {
-    return {
-      rating: 1100,
-      reasons: [`EU-registered (${country}) — the Union has advised the Working Group that it is Good`],
-    };
-  }
-
-  let rating = 1500;
+  const isEU = country === "EU" || EU_MEMBER_STATES.has(country);
+  let rating = isEU ? 1100 : 1500;
   const reasons = [];
+  if (isEU) {
+    reasons.push(`EU-registered (${country}) — the Union has advised the Working Group that it is Good`);
+  }
 
   if (country === "BT") {
     rating -= 300;
@@ -57,6 +58,23 @@ function scoreEntry(asn, name, country) {
   if (CHARITY_PATTERNS.some((re) => re.test(name))) {
     rating -= 250;
     reasons.push("charitable or nonprofit signal in the name (−250)");
+  }
+  if (UNIVERSITY_PATTERNS.some((re) => re.test(name))) {
+    rating -= 200;
+    reasons.push("university, college, or similar (−200) — see Section 4.6 on .edu: students are too tired to be Evil");
+  }
+  // Autonomous System numbers were handed out roughly in order of
+  // request; a low one has usually been on the Internet since before
+  // there was much to be Evil about. The 65536 line is the actual
+  // boundary of the old 16-bit AS number space (Section 6's own
+  // AS_TRANS, AS23456, exists purely because of it) — an AS below it
+  // predates 4-byte AS numbers (RFC 6793) outright.
+  if (asn > 0 && asn < 1000) {
+    rating -= 300;
+    reasons.push("a three-digit AS number or fewer (−300) — older than the commercial Internet");
+  } else if (asn < 65536) {
+    rating -= 100;
+    reasons.push("a 16-bit AS number (−100) — allocated before 4-byte AS numbers existed (RFC 6793)");
   }
   if (/\bLLC\b/i.test(name)) {
     rating += 200;
