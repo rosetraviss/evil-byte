@@ -1,0 +1,12 @@
+[Unit]
+Description=evil-byte MITM (NFQUEUE 666, Section 5)
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/evilbyte-mitm -queue 666
+Restart=on-failure
+AmbientCapabilities=CAP_NET_ADMIN
+CapabilityBoundingSet=CAP_NET_ADMIN
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,13 @@
+#!/usr/sbin/nft -f
+# Real-traffic nftables config for the two-VPS interop test (see deploy/README.md).
+# Unlike evil-byte-src/evil.nft (which targets the RFC 5737/3849 documentation
+# ranges for a local demo), this matches by port so it works on a real host
+# with a real public IP: it rates this box's own outbound responses from the
+# demo server, so the other VPS can check what the Evil Byte looks like after
+# crossing the real Internet (Section 10.3, Octet Bleaching).
+table inet evil {
+    chain output {
+        type filter hook output priority mangle; policy accept;
+        tcp sport 8080 queue num 666 bypass
+    }
+}

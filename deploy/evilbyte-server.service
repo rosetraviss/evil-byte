@@ -1,0 +1,11 @@
+[Unit]
+Description=evil-byte demo server (Section 7)
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/evilbyte-server -addr :8080 -threshold 128 -self-rating 17
+Restart=on-failure
+DynamicUser=yes
+
+[Install]
+WantedBy=multi-user.target
