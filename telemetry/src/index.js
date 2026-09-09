@@ -64,9 +64,9 @@ async function mapWithConcurrency(items, limit, fn) {
 export async function runExtraction(env) {
   const since = await readCursor(env.DB);
 
-  let rows;
+  let rows, nextCursor, capped;
   try {
-    rows = await fetchRequestLogs(env, { sinceIso: since, limit: ROW_LIMIT_PER_RUN });
+    ({ rows, nextCursor, capped } = await fetchRequestLogs(env, { sinceIso: since, limit: ROW_LIMIT_PER_RUN }));
   } catch (err) {
     // Cursor stays put — the next tick just retries this same window.
     console.error("telemetry: Log Explorer fetch failed:", err);
@@ -74,15 +74,15 @@ export async function runExtraction(env) {
   }
 
   if (rows.length === 0) {
-    await writeCursorAndStats(env.DB, { cursorIso: since, rowsSeen: 0, rowsCapped: false });
+    await writeCursorAndStats(env.DB, { cursorIso: since, rowsSeen: 0, rowsCapped: capped });
     return;
   }
 
-  // Latest-seen dedup, end to end: ascending timestamp order means later
-  // rows for the same IP overwrite earlier ones here, before anything
-  // touches D1 (the upsert only needs to apply "latest wins" once more,
-  // against whatever was already stored from a previous run).
-  rows.sort((a, b) => (a.edgestarttimestamp < b.edgestarttimestamp ? -1 : 1));
+  // Latest-seen dedup, end to end: fetchRequestLogs already returns rows
+  // sorted ascending (merged across zones), so later rows for the same IP
+  // overwrite earlier ones here, before anything touches D1 (the upsert
+  // only needs to apply "latest wins" once more, against whatever was
+  // already stored from a previous run).
   const byIp = new Map();
   for (const row of rows) byIp.set(row.clientip, row);
   const distinctRows = [...byIp.values()];
@@ -110,9 +110,7 @@ export async function runExtraction(env) {
 
   await upsertRequestors(env.DB, records);
 
-  const rowsCapped = rows.length === ROW_LIMIT_PER_RUN;
-  const newCursor = rows[rows.length - 1].edgestarttimestamp;
-  await writeCursorAndStats(env.DB, { cursorIso: newCursor, rowsSeen: rows.length, rowsCapped });
+  await writeCursorAndStats(env.DB, { cursorIso: nextCursor, rowsSeen: rows.length, rowsCapped: capped });
 }
 
 async function handleStats(env) {
