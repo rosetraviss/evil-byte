@@ -65,8 +65,13 @@ export async function fetchRequestLogs(env, { sinceIso, limit }) {
   const url = new URL(`${API_BASE}/accounts/${env.CF_ACCOUNT_ID}/logs/explorer/query/sql`);
   url.searchParams.set("query", query);
 
+  // Every documented example for this endpoint is a bare `curl URL
+  // --url-query query="..."` with no -X/--data — which is a GET by
+  // curl's own default. POST here got "expected 1 statement, but got 0"
+  // (verified against production): the API was looking for the query in
+  // a POST body that was never sent, not the URL param.
   const resp = await fetch(url, {
-    method: "POST",
+    method: "GET",
     headers: { authorization: `Bearer ${env.LOGS_API_TOKEN}` },
   });
 
