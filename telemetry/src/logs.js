@@ -49,7 +49,10 @@ async function cfGet(env, url) {
   });
   const body = await resp.json();
   if (!resp.ok || body.success === false) {
-    const detail = (body.errors || []).map((e) => e.message).join("; ") || resp.statusText;
+    // Cloudflare's newer error responses can include a documentation_url
+    // pinpointing the exact missing permission — surface the full error
+    // objects, not just .message, so that's visible if present.
+    const detail = JSON.stringify(body.errors || body);
     const err = new Error(`${url.pathname} failed (${resp.status}): ${detail}`);
     err.status = resp.status;
     throw err;
