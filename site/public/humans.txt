@@ -6,7 +6,7 @@
     Author: Rose Traviss
     Site: https://evilbyte.net
     From: Bristol, United Kingdom
-    Twitter: @TBD (see draft-traviss-evil-byte-00, Author's Address)
+    Contact: rtraviss@evilbyte.net
 
 /* THANKS */
     Steven Bellovin, for the original bit (RFC 3514).

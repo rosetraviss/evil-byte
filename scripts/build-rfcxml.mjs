@@ -183,10 +183,17 @@ function rawText(headingTok) {
   return headingTok.tokens.map((t) => t.raw ?? t.text ?? "").join("");
 }
 
+// xml2rfc numbers sections itself, so a <name> that still carries the
+// Markdown heading's own number renders as "5.  5.  Title".  Strip it
+// from the name only -- anchors stay as they are, so xrefs still resolve.
+function displayTitle(title) {
+  return title.replace(/^(?:Appendix\s+[A-Z]|\d+(?:\.\d+)*)\.\s+/, "");
+}
+
 function renderSection(node, numbered = true) {
   const body = node.blocks.map(renderBlock).filter(Boolean).join("\n");
   const kids = node.children.map((c) => renderSection(c, numbered)).join("\n");
-  return `<section anchor="${node.anchor}" numbered="${numbered}">\n<name>${esc(node.title)}</name>\n${body}\n${kids}\n</section>`;
+  return `<section anchor="${node.anchor}" numbered="${numbered}">\n<name>${esc(displayTitle(node.title))}</name>\n${body}\n${kids}\n</section>`;
 }
 
 const tokens = marked.lexer(body);
@@ -194,7 +201,10 @@ const sections = buildSections(tokens);
 
 const refIdx = sections.findIndex((s) => /^14\./.test(s.title) || /^References$/i.test(s.title));
 const middleSections = refIdx === -1 ? sections : sections.slice(0, refIdx);
-const backSections = refIdx === -1 ? [] : sections.slice(refIdx + 1); // skip the "14. References" wrapper itself
+const backSections = (refIdx === -1 ? [] : sections.slice(refIdx + 1)) // skip the "14. References" wrapper itself
+  // xml2rfc renders its own Author's Address section from <author> in
+  // <front>; emitting the Markdown one too puts it in the document twice.
+  .filter((s) => !/^Author's Address$/i.test(s.title));
 
 function renderReferenceGroup(name, anchors) {
   const refs = anchors
@@ -218,8 +228,8 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <!ENTITY nbsp "&#160;">
 ]>
 <rfc xmlns:xi="http://www.w3.org/2001/XInclude"
-     category="std" docName="draft-traviss-evil-byte-00" ipr="trust200902"
-     obsoletes="3514" submissionType="IETF" xml:lang="en" version="3">
+     category="info" docName="draft-traviss-evil-byte-00" ipr="trust200902"
+     obsoletes="3514" submissionType="independent" xml:lang="en" version="3">
   <front>
     <title abbrev="The Evil Byte">The Evil Byte: A Security Octet for the IPv4 and IPv6 Headers</title>
     <seriesInfo name="Internet-Draft" value="draft-traviss-evil-byte-00"/>
@@ -230,11 +240,10 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
           <city>Bristol</city>
           <country>United Kingdom</country>
         </postal>
-        <email>TBD</email>
+        <email>rtraviss@evilbyte.net</email>
       </address>
     </author>
-    <date year="2027" month="April" day="1"/>
-    <workgroup>EVIL Working Group</workgroup>
+    <date year="2026" month="September" day="9"/>
     <keyword>evil</keyword>
     <keyword>security</keyword>
     <abstract>

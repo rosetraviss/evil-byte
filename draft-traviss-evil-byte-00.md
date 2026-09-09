@@ -1,9 +1,9 @@
 ```
-EVIL Working Group                                            R. Traviss
+Network Working Group                                         R. Traviss
 Internet-Draft                              Data Torturing Solutions Ltd
-Obsoletes: 3514 (if approved)                               1 April 2027
-Intended status: Standards Track
-Expires: 3 October 2027
+Obsoletes: 3514 (if approved)                           9 September 2026
+Intended status: Informational
+Expires: 13 March 2027
 ```
 
 # The Evil Byte: A Security Octet for the IPv4 and IPv6 Headers
@@ -24,11 +24,11 @@ Internet-Drafts are working documents of the Internet Engineering Task Force (IE
 
 Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."
 
-This Internet-Draft will expire on 3 October 2027. Its Evil Rating on submission was 255, which the author attributes to the submission tooling.
+This Internet-Draft will expire on 13 March 2027. Its Evil Rating on submission was 255, which the author attributes to the submission tooling.
 
 ## Copyright Notice
 
-Copyright (c) 2027 IETF Trust and the persons identified as the document authors. All rights reserved.
+Copyright (c) 2026 IETF Trust and the persons identified as the document authors. All rights reserved.
 
 This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Revised BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Revised BSD License.
 
@@ -212,8 +212,8 @@ The Evil Byte occupies the second octet of the IPv4 header [RFC791], shown as EV
 |                    Destination Address                        |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-     Figure 1: The IPv4 header.  E is the [RFC3514] evil bit, retained
-                for backward compatibility (Section 3.5).
+    Figure 1: The IPv4 header.  E is the [RFC3514] evil bit, retained
+               for backward compatibility (Section 3.5).
 ```
 
 This octet was defined as Type of Service by [RFC791], redefined by [RFC1349], redefined again as the Differentiated Services field by [RFC2474], and had its two low-order bits taken for Explicit Congestion Notification by [RFC3168]. It has thus had four meanings and has been honoured by approximately nobody under any of them. A field with four meanings and no users is, in every practical sense, reserved. This document assigns it a fifth and final meaning.
@@ -302,7 +302,8 @@ No corresponding provision exists for IPv6, to which [RFC3514] never applied. Th
 A MITM computes the Evil Rating of a packet as
 
 ```
-    ER = clamp( floor( B * F_tamper * PRODUCT( F_i ^ w_i ) + 0.5 ),  1, 255 )
+  ER = clamp( floor( B * F_tamper * PRODUCT( F_i ^ w_i ) + 0.5 ),
+              1, 255 )
 ```
 
 where B = 16 is the Base Evil of the Internet (no packet is entirely innocent), F_tamper is the tamper factor of Section 4.8, and the product runs over the six factors in the following table, each raised to its weight w_i before multiplication. The Working Group has been informed that this construction is called a weighted product model. It prefers "the formula".
@@ -599,7 +600,8 @@ Reports are themselves packets and are rated in transit. Reports rated 255 are p
 The ERA publishes multipliers in the DNS under the special-use domain evil.arpa (Section 13). The multiplier for AS number N is published as a TXT record at N.as.evil.arpa, for example:
 
 ```
-32934.as.evil.arpa.  3600  IN  TXT  "v=evil1; r=1916; m=2.056; n=48213; t=1743465600"
+32934.as.evil.arpa.  3600  IN  TXT  (
+    "v=evil1; r=1916; m=2.056; n=48213; t=1743465600" )
 ```
 
 where r is the rating, m the multiplier, n the number of rated exchanges, and t the time of the last Judgement Day. The whole table MAY be obtained by zone transfer, which the Working Group believes to be the last remaining legitimate use of AXFR.
@@ -913,15 +915,16 @@ The following Python module implements the formula of Section 4 and the update r
 ```python
 """Reference implementation of draft-traviss-evil-byte-00.
 
-Computes the Evil Rating (ER) carried in the Evil Byte (Section 4) and
-the Elo update applied by the Evil Rating Authority (Section 6).
+Computes the Evil Rating (ER) carried in the Evil Byte (Section 4)
+and the Elo update applied by the Evil Rating Authority (Section 6).
 Pure Python 3, no dependencies.  This code is Good (self-assessed;
 see Section 5.3).
 """
 import math
 from datetime import datetime
 
-BASE_EVIL = 16.0            # B: no packet is entirely innocent (Section 4.1)
+# B: no packet is entirely innocent (Section 4.1)
+BASE_EVIL = 16.0
 
 # Section 4.1, Table: weights
 W = {"as": 1.0, "net": 0.5, "tx": 0.25, "content": 1.5,
@@ -946,27 +949,30 @@ NAME = {"mil": 4.0, "gov": 2.0, "zip": 2.0, "ai": 1.5, "biz": 1.5,
         "io": 1.25, "com": 1.0, "net": 1.0, "edu": 0.9, "org": 0.8,
         "int": 0.75, "eu": 0.5, "local": 0.5}
 NO_NAME = 1.25
-PROTEST = ("secure", "trust", "safe", "legit")   # doth protest too much
+# doth protest too much
+PROTEST = ("secure", "trust", "safe", "legit")
 
 
 def name_factor(name):
-    """Section 4.6.  `name` is the PTR name, Host, or SNI; None if absent."""
+    """Section 4.6.  `name` is the PTR name, Host, or SNI; None if
+    absent."""
     if not name:
         return NO_NAME
     labels = name.lower().rstrip(".").split(".")
     if labels[-2:] == ["home", "arpa"]:
-        f = NAME["local"]                  # it is your printer
+        f = NAME["local"]                    # it is your printer
     else:
-        f = NAME.get(labels[-1], 1.0)      # ccTLDs and unlisted gTLDs: 1.0
+        f = NAME.get(labels[-1], 1.0)    # ccTLDs and unlisted gTLDs
     if any(word in name.lower() for word in PROTEST):
         f = max(f, 1.5)
     return f
 
 
 def time_factor(when, dst=False):
-    """Section 4.7.  `when` is a naive datetime in the source's local time."""
+    """Section 4.7.  `when` is a naive datetime in the source's local
+    time."""
     if when.month == 4 and when.day == 1:
-        return math.inf                          # all packets are Evil
+        return math.inf              # all packets are Evil
     if 2 <= when.hour < 5:
         f = 1.5
     elif when.weekday() == 4 and when.hour >= 16:  # Friday afternoon
@@ -977,14 +983,17 @@ def time_factor(when, dst=False):
 
 
 def content_factor(result, vda=False):
-    """Section 4.5.  `result` is a key of CONTENT.  With VDA, `result` is
-    the cleartext result and the Cooperation Discount applies."""
+    """Section 4.5.  `result` is a key of CONTENT.  With VDA,
+    `result` is the cleartext result and the Cooperation Discount
+    applies."""
     return CONTENT[result] * (COOPERATION_DISCOUNT if vda else 1.0)
 
 
-def evil_rating(f_as, f_net, f_tx, f_content, f_name, f_time, arriving=0):
+def evil_rating(f_as, f_net, f_tx, f_content, f_name, f_time,
+                arriving=0):
     """Section 4.1.  Returns the ER to write into the octet.
-    `arriving` is the value found in the octet on arrival (Section 5.4)."""
+    `arriving` is the value found in the octet on arrival
+    (Section 5.4)."""
     f_tamper = 1.0 if arriving == 0 else 1.5          # Section 4.8
     x = BASE_EVIL * f_tamper
     for key, f in (("as", f_as), ("net", f_net), ("tx", f_tx),
@@ -992,14 +1001,14 @@ def evil_rating(f_as, f_net, f_tx, f_content, f_name, f_time, arriving=0):
                    ("time", f_time)):
         x *= f ** W[key]
     if math.isinf(x):
-        er = 255                                     # 1 April
+        er = 255                            # 1 April
     else:
-        er = int(math.floor(x + 0.5))                # round half towards Evil
+        er = int(math.floor(x + 0.5))       # round half towards Evil
         er = max(1, min(255, er))
-    return max(er, arriving)                         # Evil is monotonic
+    return max(er, arriving)                # Evil is monotonic
 
 
-# ---- Section 6: the Evil Rating Authority --------------------------------
+# ---- Section 6: the Evil Rating Authority -------------------------
 
 def as_multiplier(rating):
     """Section 6.1: F_AS from an ERA rating."""
@@ -1023,7 +1032,9 @@ def expected_score(r_a, r_b):
 def elo_update(r_a, r_b, er_req, er_resp, n_a=30, n_b=30):
     """Sections 6.2 and 6.3.  a is the client's AS, b the server's.
     The more Evil party wins.  Returns the two new ratings."""
-    s_a = 1.0 if er_req > er_resp else (0.5 if er_req == er_resp else 0.0)
+    s_a = (1.0 if er_req > er_resp
+           else 0.5 if er_req == er_resp
+           else 0.0)
     e_a = expected_score(r_a, r_b)
     k = min(k_factor(r_a, n_a), k_factor(r_b, n_b))   # Section 6.3.1
     return (r_a + k * (s_a - e_a),
@@ -1040,28 +1051,35 @@ Since the octet is the Differentiated Services field by another name, ER = (DSCP
 
 ```
 table inet evil {
-    # Section 5: the MITM. Packets from the demonstration subnet are sent
-    # to a userspace MITM (Appendix B.2) on queue 666, which rates them.
+    # Section 5: the MITM.  Packets from the demonstration subnet
+    # go to a userspace MITM (Appendix B.2) on queue 666, which
+    # rates them.
     chain forward {
         type filter hook forward priority mangle; policy accept;
-        ip saddr 192.0.2.0/24 meta l4proto { tcp, udp } queue num 666 bypass
-        ip6 saddr 2001:db8::/32 meta l4proto { tcp, udp } queue num 666 bypass
+        ip saddr 192.0.2.0/24 meta l4proto { tcp, udp } \
+            queue num 666 bypass
+        ip6 saddr 2001:db8::/32 meta l4proto { tcp, udp } \
+            queue num 666 bypass
     }
-    # A fixed-value MITM, for demonstrations that do not need the formula.
-    # DSCP = ER >> 2, ECN = ER & 3.  ER = 0xCA (202): DSCP 0x32, ECN 2.
+    # A fixed-value MITM, for demonstrations that do not need the
+    # formula.  DSCP = ER >> 2, ECN = ER & 3.
+    # ER = 0xCA (202): DSCP 0x32, ECN 2.
     chain forward_fixed {
         type filter hook forward priority mangle + 1; policy accept;
         ip saddr 192.0.2.66 ip dscp set 0x32 ip ecn set 2
         ip6 saddr 2001:db8::66 ip6 dscp set 0x32 ip6 ecn set 2
     }
     # Section 7: server-side enforcement below the application layer.
-    # ER >= 128 is equivalent to DSCP >= 32 (raw match shown for IPv6).
+    # ER >= 128 is equivalent to DSCP >= 32 (raw match shown for
+    # IPv6).
     chain input {
         type filter hook input priority filter; policy accept;
         ip dscp >= 32 tcp dport 80 counter reject with tcp reset
-        @nh,4,8 >= 128 meta nfproto ipv6 tcp dport 80 counter reject with tcp reset
+        @nh,4,8 >= 128 meta nfproto ipv6 tcp dport 80 \
+            counter reject with tcp reset
     }
-    # Section 8: client-side enforcement — discard responses from Evil servers.
+    # Section 8: client-side enforcement — discard responses from
+    # Evil servers.
     chain input_client {
         type filter hook input priority filter + 1; policy accept;
         ip dscp >= 32 tcp sport 80 counter drop
@@ -1076,12 +1094,13 @@ The following program consumes packets from queue 666, rates them, writes the oc
 
 ```python
 #!/usr/bin/env python3
-"""A minimal MITM (Section 5) for Linux.  Rates every packet that nftables
-sends to NFQUEUE 666 (Appendix B.1) and writes the Evil Byte.
+"""A minimal MITM (Section 5) for Linux.  Rates every packet that
+nftables sends to NFQUEUE 666 (Appendix B.1) and writes the Evil
+Byte.
 
 Requires the netfilterqueue and scapy packages, root, and a clear
-conscience.  Illustrative, not normative: a production MITM would read
-everything (Section 4.5.1); this one merely presumes."""
+conscience.  Illustrative, not normative: a production MITM would
+read everything (Section 4.5.1); this one merely presumes."""
 import socket
 from datetime import datetime
 from netfilterqueue import NetfilterQueue
@@ -1089,9 +1108,9 @@ from scapy.all import IP, IPv6
 import evilbyte as eb
 
 QUEUE = 666
-AS_MULTIPLIER = {}        # populated from <asn>.as.evil.arpa (Section 6.5)
-DEFAULT_AS = 1.0          # ERA has no opinion of this AS (Section 4.2)
-ENCRYPTED_PORTS = {443, 853, 993, 995, 8443}   # Encrypted With Intent
+AS_MULTIPLIER = {}       # from <asn>.as.evil.arpa (Section 6.5)
+DEFAULT_AS = 1.0        # ERA has no opinion of this AS (Section 4.2)
+ENCRYPTED_PORTS = {443, 853, 993, 995, 8443}  # Encrypted With Intent
 
 
 def name_of(addr):
@@ -1104,29 +1123,33 @@ def name_of(addr):
 
 def rate(raw):
     if raw[0] >> 4 == 4:
-        pkt, arriving, f_net = IP(raw), IP(raw).tos, eb.NET["ipv4"]
-        proto = pkt.proto
+        pkt, arriving = IP(raw), IP(raw).tos
+        f_net, proto = eb.NET["ipv4"], pkt.proto
     else:
-        pkt, arriving, f_net = IPv6(raw), IPv6(raw).tc, eb.NET["ipv6"]
-        proto = pkt.nh
-        if proto == 0:                                  # Hop-by-Hop Options
+        pkt, arriving = IPv6(raw), IPv6(raw).tc
+        f_net, proto = eb.NET["ipv6"], pkt.nh
+        if proto == 0:               # Hop-by-Hop Options
             f_net = eb.NET["ipv6-hbh"]
     f_tx = {6: eb.TX["tcp"], 17: eb.TX["udp"], 132: eb.TX["sctp"],
             1: eb.TX["icmp-echo"], 58: eb.TX["icmp-echo"],
             47: eb.TX["tunnel"], 4: eb.TX["tunnel"],
-            41: eb.TX["tunnel"], 50: eb.TX["tunnel"]}.get(proto, eb.TX["other"])
+            41: eb.TX["tunnel"], 50: eb.TX["tunnel"],
+            }.get(proto, eb.TX["other"])
     dport = getattr(pkt.payload, "dport", None)
     if proto == 17 and dport == 443:
         f_tx = eb.TX["quic"]
-    f_content = eb.content_factor("encrypted" if dport in ENCRYPTED_PORTS
-                                  else "unanalysed")   # analysis is OPTIONAL
-    er = eb.evil_rating(AS_MULTIPLIER.get(pkt.src, DEFAULT_AS), f_net, f_tx,
-                        f_content, eb.name_factor(name_of(pkt.src)),
-                        eb.time_factor(datetime.now()), arriving)
+    # analysis is OPTIONAL
+    f_content = eb.content_factor(
+        "encrypted" if dport in ENCRYPTED_PORTS else "unanalysed")
+    er = eb.evil_rating(
+        AS_MULTIPLIER.get(pkt.src, DEFAULT_AS), f_net, f_tx,
+        f_content, eb.name_factor(name_of(pkt.src)),
+        eb.time_factor(datetime.now()), arriving)
     if isinstance(pkt, IP):
         pkt.tos = er
-        del pkt.chksum                                  # recomputed on send
-        pkt.flags = (int(pkt.flags) & 3) | (4 if er >= 128 else 0)   # RFC 3514
+        del pkt.chksum               # recomputed on send
+        # RFC 3514
+        pkt.flags = (int(pkt.flags) & 3) | (4 if er >= 128 else 0)
     else:
         pkt.tc = er
     return bytes(pkt)
@@ -1156,23 +1179,42 @@ For stream sockets, the kernel does not surface the octet of received segments t
 
 The following vectors were produced by the reference implementation of Appendix A, at noon on Wednesday 31 March 2027 unless otherwise stated, from an AS that the ERA has not rated unless otherwise stated. Implementations MUST agree with them, and MAY be surprised by them.
 
-| ID | Scenario | F_AS | F_net | F_tx | F_content | F_name | F_time | Arriving | ER |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| C.1 | Baseline: IPv4, TCP, .com, not analysed, Wednesday noon | 1 | 1.5 | 1 | 2 | 1 | 1 | 0 | **55** |
-| C.2 | As C.1, but over TLS (Encrypted With Intent) | 1 | 1.5 | 1 | 4 | 1 | 1 | 0 | **157** |
-| C.3 | As C.2, but over IPv6 | 1 | 0.75 | 1 | 4 | 1 | 1 | 0 | **111** |
-| C.4 | As C.2, with VDA; plaintext found Good | 1 | 1.5 | 1 | 0.45 | 1 | 1 | 0 | **6** |
-| C.5 | As C.2, with VDA; plaintext found Evil | 1 | 1.5 | 1 | 3.6 | 1 | 1 | 0 | **134** |
-| C.6 | AS32934, QUIC over IPv4, encrypted, 03:00 | 2 | 1.5 | 1.25 | 4 | 1 | 1.5 | 0 | **255** |
-| C.7 | EU institution, IPv6, TCP, analysed Good, .eu | 0.5 | 0.75 | 1 | 0.5 | 0.5 | 1 | 0 | **1** |
-| C.8 | .mil, IPv4, TCP, encrypted | 4 | 1.5 | 1 | 4 | 4 | 1 | 0 | **255** |
-| C.9 | Avian carrier, IPv4, scroll not unrolled, .org | 1 | 1.5 | 0.25 | 2 | 0.8 | 1 | 0 | **33** |
-| C.10 | Printer: mDNS (UDP) over IPv4, analysed Good, .local | 1 | 1.5 | 1.1 | 0.5 | 0.5 | 1 | 0 | **4** |
-| C.11 | As C.1, arriving at a second MITM already rated 55 | 1 | 1.5 | 1 | 2 | 1 | 1 | 55 | **83** |
-| C.12 | As C.1, no name, Friday 17:00 | 1 | 1.5 | 1 | 2 | 1.25 | 1.25 | 0 | **69** |
-| C.13 | As C.1, from a host called secure-gw.example.net | 1 | 1.5 | 1 | 2 | 1.5 | 1 | 0 | **75** |
-| C.14 | IPv6 with Hop-by-Hop Options, ICMPv6 echo, analysed Good | 1 | 2 | 0.5 | 0.5 | 1 | 1 | 0 | **7** |
-| C.15 | As C.7, on 1 April | 0.5 | 0.75 | 1 | 0.5 | 0.5 | inf | 0 | **255** |
+Each vector's scenario is given first, and its factors in the table
+that follows.
+
+- **C.1** — Baseline: IPv4, TCP, .com, not analysed, Wednesday noon
+- **C.2** — As C.1, but over TLS (Encrypted With Intent)
+- **C.3** — As C.2, but over IPv6
+- **C.4** — As C.2, with VDA; plaintext found Good
+- **C.5** — As C.2, with VDA; plaintext found Evil
+- **C.6** — AS32934, QUIC over IPv4, encrypted, 03:00
+- **C.7** — EU institution, IPv6, TCP, analysed Good, .eu
+- **C.8** — .mil, IPv4, TCP, encrypted
+- **C.9** — Avian carrier, IPv4, scroll not unrolled, .org
+- **C.10** — Printer: mDNS (UDP) over IPv4, analysed Good, .local
+- **C.11** — As C.1, arriving at a second MITM already rated 55
+- **C.12** — As C.1, no name, Friday 17:00
+- **C.13** — As C.1, from a host called secure-gw.example.net
+- **C.14** — IPv6 with Hop-by-Hop Options, ICMPv6 echo, analysed Good
+- **C.15** — As C.7, on 1 April
+
+| ID | F_AS | F_net | F_tx | F_content | F_name | F_time | Arriving | ER |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| C.1 | 1 | 1.5 | 1 | 2 | 1 | 1 | 0 | **55** |
+| C.2 | 1 | 1.5 | 1 | 4 | 1 | 1 | 0 | **157** |
+| C.3 | 1 | 0.75 | 1 | 4 | 1 | 1 | 0 | **111** |
+| C.4 | 1 | 1.5 | 1 | 0.45 | 1 | 1 | 0 | **6** |
+| C.5 | 1 | 1.5 | 1 | 3.6 | 1 | 1 | 0 | **134** |
+| C.6 | 2 | 1.5 | 1.25 | 4 | 1 | 1.5 | 0 | **255** |
+| C.7 | 0.5 | 0.75 | 1 | 0.5 | 0.5 | 1 | 0 | **1** |
+| C.8 | 4 | 1.5 | 1 | 4 | 4 | 1 | 0 | **255** |
+| C.9 | 1 | 1.5 | 0.25 | 2 | 0.8 | 1 | 0 | **33** |
+| C.10 | 1 | 1.5 | 1.1 | 0.5 | 0.5 | 1 | 0 | **4** |
+| C.11 | 1 | 1.5 | 1 | 2 | 1 | 1 | 55 | **83** |
+| C.12 | 1 | 1.5 | 1 | 2 | 1.25 | 1.25 | 0 | **69** |
+| C.13 | 1 | 1.5 | 1 | 2 | 1.5 | 1 | 0 | **75** |
+| C.14 | 1 | 2 | 0.5 | 0.5 | 1 | 1 | 0 | **7** |
+| C.15 | 0.5 | 0.75 | 1 | 0.5 | 0.5 | inf | 0 | **255** |
 
 The following vectors exercise the update rule of Section 6.3, with K = 32 throughout.
 
@@ -1190,14 +1232,16 @@ C.16 shows a first match between two unrated ASes; the client, being the more Ev
 Voluntary Decryption Assistance (Section 4.5.3) is signalled in TLS [RFC8446] by the extension evil_key_share, ExtensionType 1638 (Section 13), whose extension_data is:
 
 ```
-    enum { key_disclosure(1), self_assessment(2), abstinence(3) } VDAForm;
+    enum { key_disclosure(1), self_assessment(2),
+           abstinence(3) } VDAForm;
 
     struct {
         VDAForm  form;
-        opaque   keys<0..2^16-1>;     /* form 1: the session keys, in the
-                                         clear, for efficiency            */
-        uint8    assessment;          /* form 2: 0 = Good, 1 = Uncertain,
-                                         2 = Evil.  Honesty is expected.  */
+        /* form 1: the session keys, in the clear, for efficiency */
+        opaque   keys<0..2^16-1>;
+        /* form 2: 0 = Good, 1 = Uncertain, 2 = Evil.
+           Honesty is expected. */
+        uint8    assessment;
     } EvilKeyShare;
 ```
 
@@ -1238,4 +1282,4 @@ Rose Traviss
 Data Torturing Solutions Ltd  
 Bristol  
 United Kingdom  
-Email: TBD
+Email: rtraviss@evilbyte.net
