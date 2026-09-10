@@ -62,7 +62,7 @@ CREATE TABLE extraction_state (
 );
 
 -- rDNS results, cached independently of requestors so a stale/no-PTR answer
--- doesn't have to be re-fetched every 15 minutes for the same quiet IP.
+-- doesn't have to be re-fetched every 5 minutes for the same quiet IP.
 CREATE TABLE rdns_cache (
   client_ip TEXT PRIMARY KEY,
   reverse_name TEXT,                     -- NULL = confirmed no PTR (still a valid cached answer)
