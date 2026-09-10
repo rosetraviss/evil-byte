@@ -12,9 +12,9 @@ Expires: 13 March 2027
 
 ## Abstract
 
-Firewalls, intrusion detection systems, and similar devices continue to have difficulty distinguishing packets that have malicious intent from those that are merely unusual. [RFC3514] addressed this problem by defining a security flag in the IPv4 header, the "evil bit", to be set by the sender of any packet with malicious intent. Twenty-four years of operational experience have shown that senders cannot be relied upon to set it, and that a single bit cannot express the range of Evil now observed on the Internet.
+Firewalls, intrusion detection systems, and similar devices continue to have difficulty distinguishing packets that have malicious intent from those that are merely unusual. RFC 3514 addressed this problem by defining a security flag in the IPv4 header, the "evil bit", to be set by the sender of any packet with malicious intent. Twenty-four years of operational experience have shown that senders cannot be relied upon to set it, and that a single bit cannot express the range of Evil now observed on the Internet.
 
-This document obsoletes the evil bit and replaces it with the Evil Byte: an eight-bit Evil Rating carried in every IPv4 and IPv6 packet, computed and set not by the sender but by a Morality-Inspecting Trusted Middleman (MITM) on the path, from a weighted product of the sender's Autonomous System, choice of protocols, content, name, and the time of day. Servers reject requests from Evil clients; clients discard responses from Evil servers; and the Evil of every Autonomous System is continuously re-estimated by an Elo rating system operated by a central Evil Rating Authority. The document also specifies the carriage of the octet over avian carriers.
+This document obsoletes RFC 3514, replacing the evil bit with the Evil Byte: an eight-bit Evil Rating carried in every IPv4 and IPv6 packet, computed and set not by the sender but by a Morality-Inspecting Trusted Middleman (MITM) on the path, from a weighted product of the sender's Autonomous System, choice of protocols, content, name, and the time of day. Servers reject requests from Evil clients; clients discard responses from Evil servers; and the Evil of every Autonomous System is continuously re-estimated by an Elo rating system operated by a central Evil Rating Authority. The document also specifies the carriage of the octet over avian carriers.
 
 ## Status of This Memo
 
@@ -149,7 +149,7 @@ Incentive. Deployment of IPv6 is rewarded, since nothing else has worked.
 
 Several legislative proposals [CSAR] [OSA] would require intermediaries to examine the content of private communications, on the reasoning that content which cannot be examined might be harmful, and that the way to find out is to examine it. This document adopts the same reasoning, extends it from messages to every packet, and differs from those proposals chiefly in candour. It is offered in the spirit of [RFC1925], truth 11.
 
-This document additionally discharges, if only incidentally, [RFC4041]'s requirement that Routing Area drafts include a Morality Considerations section. The Working Group notes that this draft does not merely include one; it has not left room for anything else.
+This document additionally discharges, if only incidentally, the requirement in [RFC4041] that Routing Area drafts include a Morality Considerations section. The Working Group notes that this draft does not merely include one; it has not left room for anything else.
 
 Nor does it duplicate the jurisdiction already claimed by the Protocol Police [RFC8962], as codified by [RFC9948]: the Protocol Police discipline how a packet is built, and this document disciplines who built it. Where the two penalties might both apply to the same packet, [RFC9948]'s Finger Wag and this document's threshold of 128 (Section 7.1) are administered independently, and the Working Group sees no reason to choose between them.
 
@@ -212,7 +212,7 @@ The Evil Byte occupies the second octet of the IPv4 header [RFC791], shown as EV
 |                    Destination Address                        |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-    Figure 1: The IPv4 header.  E is the [RFC3514] evil bit, retained
+    Figure 1: The IPv4 header.  E is the RFC 3514 evil bit, retained
                for backward compatibility (Section 3.5).
 ```
 
@@ -262,8 +262,8 @@ The Flow Label is not used by this specification. The Working Group considered u
 |---:|---|
 | 0 | Unrated. No MITM has assessed this packet. |
 | 1 | Verified Good. The minimum rating for a packet that has been assessed; the Working Group does not believe in perfection. |
-| 2–127 | Good, of diminishing quality. |
-| 128–254 | Evil, of increasing quality. |
+| 2-127 | Good, of diminishing quality. |
+| 128-254 | Evil, of increasing quality. |
 | 255 | Saturated Evil. The scale ends here. Evil does not. |
 
 Values are unsigned. There is no negative Evil; there is only Good, and there is less of it than you would think.
@@ -310,12 +310,12 @@ where B = 16 is the Base Evil of the Internet (no packet is entirely innocent), 
 
 | Factor | Symbol | Weight | Range | Section |
 |---|---|---:|---|---|
-| Autonomous System | F_AS | 1.00 | 0.25 – 4.0 | 4.2 |
-| Network protocol | F_net | 0.50 | 0.75 – 2.0 | 4.3 |
-| Transport | F_tx | 0.25 | 0.25 – 4.0 | 4.4 |
-| Content | F_content | 1.50 | 0.45 – 4.0 | 4.5 |
-| Nomenclature | F_name | 0.75 | 0.5 – 4.0 | 4.6 |
-| Temporal | F_time | 0.25 | 1.0 – 1.6, or infinite | 4.7 |
+| Autonomous System | F_AS | 1.00 | 0.25 - 4.0 | 4.2 |
+| Network protocol | F_net | 0.50 | 0.75 - 2.0 | 4.3 |
+| Transport | F_tx | 0.25 | 0.25 - 4.0 | 4.4 |
+| Content | F_content | 1.50 | 0.45 - 4.0 | 4.5 |
+| Nomenclature | F_name | 0.75 | 0.5 - 4.0 | 4.6 |
+| Temporal | F_time | 0.25 | 1.0 - 1.6, or infinite | 4.7 |
 | Tamper | F_tamper | 1.00 | 1.0 or 1.5 | 4.8 |
 
 The result is rounded half towards Evil. Implementations MUST NOT round towards Good. It is then clamped to the range 1 to 255. A MITM MUST NOT write 0, which is reserved for the Unrated (Section 3.3): a packet that a MITM has seen is by definition no longer Unrated, whatever else it may be.
@@ -339,9 +339,9 @@ The ERA initialises every AS at a rating of 1500 (Section 6.1), corresponding to
 | AS721 (DoD Network Information Center), and any AS originating prefixes whose reverse mapping is under .mil | 2300 | 4.0 | See Section 4.6. This is not a value judgement; it is a byte. |
 | AS0 [RFC7607] | 2300 | 4.0 | An AS that does not exist and nevertheless appears in routing tables is definitionally suspicious. |
 | AS23456 (AS_TRANS) | 1734 | 1.5 | Neither one thing nor the other. |
-| AS64496–AS64511 (documentation) [RFC5398] | 1500 | 1.0 | Fictional, and therefore incapable of Evil, which is more than can be said for the rest of this table. |
+| AS64496-AS64511 (documentation) [RFC5398] | 1500 | 1.0 | Fictional, and therefore incapable of Evil, which is more than can be said for the rest of this table. |
 | Private-use ASes [RFC6996] | 1500 | 1.0 | They are doing their best. |
-| AS4294967295 [RFC7300] | — | — | The last AS. Reserved. The Working Group prefers not to think about it. |
+| AS4294967295 [RFC7300] | n/a | n/a | The last AS. Reserved. The Working Group prefers not to think about it. |
 | The ERA's own AS | 1500 | 1.0 | Fixed in perpetuity. See Section 6.7. |
 
 AS32934's rating above should be read alongside [RFC5514], which proposed running IPv6 over social networks in the first place; a network that has already been asked to carry the protocol over friendships has earned some of its multiplier honestly.
@@ -460,9 +460,9 @@ F_tamper = 1.0 if the Evil Byte is 0 (Unrated) when the packet arrives at the MI
 
 ### 4.9. Worked Examples
 
-An ordinary request over IPv4 and TCP to a .com name, from an AS the ERA has not rated, in the middle of a Wednesday, whose content the MITM did not examine, has F_AS = 1.0, F_net = 1.5, F_tx = 1.0, F_content = 2.0, F_name = 1.0, and F_time = 1.0. The formula gives 16 × 1.5^0.5 × 2.0^1.5 = 55.4, so ER = 55: Good, of moderate quality.
+An ordinary request over IPv4 and TCP to a .com name, from an AS the ERA has not rated, in the middle of a Wednesday, whose content the MITM did not examine, has F_AS = 1.0, F_net = 1.5, F_tx = 1.0, F_content = 2.0, F_name = 1.0, and F_time = 1.0. The formula gives 16 * 1.5^0.5 * 2.0^1.5 = 55.4, so ER = 55: Good, of moderate quality.
 
-The same request over TLS is Encrypted With Intent: F_content = 4.0, and 16 × 1.5^0.5 × 4.0^1.5 = 156.8, so ER = 157. It is Evil, and a server using the default threshold (Section 7.1) will reject it. This is the expected outcome for the majority of traffic on the Internet today, and is the point.
+The same request over TLS is Encrypted With Intent: F_content = 4.0, and 16 * 1.5^0.5 * 4.0^1.5 = 156.8, so ER = 157. It is Evil, and a server using the default threshold (Section 7.1) will reject it. This is the expected outcome for the majority of traffic on the Internet today, and is the point.
 
 The same request over IPv6 has F_net = 0.75 and ER = 111, and is accepted. The Working Group draws attention to the fact that a well-behaved encrypted client passes the default threshold over IPv6 and fails it over IPv4. This is the first deployment incentive for IPv6 in the history of the protocol.
 
@@ -838,11 +838,11 @@ Three-Letter Acronyms. This document coins four new ones: MITM, ERA, VDA, and ES
 
 [RFC8259] Bray, T., Ed., "The JavaScript Object Notation (JSON) Data Interchange Format", STD 90, RFC 8259, December 2017.
 
-[RFC8446] Rescorla, E., "The Transport Layer Security (TLS) Protocol Version 1.3", RFC 8446, August 2018.
-
 [RFC8615] Nottingham, M., "Well-Known Uniform Resource Identifiers (URIs)", RFC 8615, May 2019.
 
 [RFC9110] Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke, Ed., "HTTP Semantics", STD 97, RFC 9110, June 2022.
+
+[RFC9846] Rescorla, E., "The Transport Layer Security (TLS) Protocol Version 1.3", RFC 9846, July 2026.
 
 [ELO] Elo, A. E., "The Rating of Chessplayers, Past and Present", Arco Publishing, 1978.
 
@@ -958,12 +958,15 @@ def name_factor(name):
     absent."""
     if not name:
         return NO_NAME
-    labels = name.lower().rstrip(".").split(".")
-    if labels[-2:] == ["home", "arpa"]:
-        f = NAME["local"]                    # it is your printer
+    lowered = name.lower().rstrip(".")
+    labels = lowered.split(".")
+    tld = labels.pop()                   # the top-level label
+    parent = labels.pop() if labels else ""
+    if tld == "arpa" and parent == "home":
+        f = NAME["local"]                # it is your printer
     else:
-        f = NAME.get(labels[-1], 1.0)    # ccTLDs and unlisted gTLDs
-    if any(word in name.lower() for word in PROTEST):
+        f = NAME.get(tld, 1.0)           # ccTLDs and unlisted gTLDs
+    if any(word in lowered for word in PROTEST):
         f = max(f, 1.5)
     return f
 
@@ -1049,7 +1052,7 @@ This appendix describes how the author deployed the specification on a small net
 
 Since the octet is the Differentiated Services field by another name, ER = (DSCP << 2) | ECN, and ER >= 128 is equivalent to DSCP >= 32. A fixed rating can therefore be written, and a threshold enforced, with stock nftables. The formula itself is computed in userspace: the rules below hand packets from the demonstration subnet to the MITM of Appendix B.2 on queue 666.
 
-```
+```nftables
 table inet evil {
     # Section 5: the MITM.  Packets from the demonstration subnet
     # go to a userspace MITM (Appendix B.2) on queue 666, which
@@ -1078,7 +1081,7 @@ table inet evil {
         @nh,4,8 >= 128 meta nfproto ipv6 tcp dport 80 \
             counter reject with tcp reset
     }
-    # Section 8: client-side enforcement — discard responses from
+    # Section 8: client-side enforcement: discard responses from
     # Evil servers.
     chain input_client {
         type filter hook input priority filter + 1; policy accept;
@@ -1105,7 +1108,8 @@ import socket
 from datetime import datetime
 from netfilterqueue import NetfilterQueue
 from scapy.all import IP, IPv6
-import evilbyte as eb
+from evilbyte import NET, TX, content_factor, evil_rating
+from evilbyte import name_factor, time_factor
 
 QUEUE = 666
 AS_MULTIPLIER = {}       # from <asn>.as.evil.arpa (Section 6.5)
@@ -1124,27 +1128,27 @@ def name_of(addr):
 def rate(raw):
     if raw[0] >> 4 == 4:
         pkt, arriving = IP(raw), IP(raw).tos
-        f_net, proto = eb.NET["ipv4"], pkt.proto
+        f_net, proto = NET["ipv4"], pkt.proto
     else:
         pkt, arriving = IPv6(raw), IPv6(raw).tc
-        f_net, proto = eb.NET["ipv6"], pkt.nh
+        f_net, proto = NET["ipv6"], pkt.nh
         if proto == 0:               # Hop-by-Hop Options
-            f_net = eb.NET["ipv6-hbh"]
-    f_tx = {6: eb.TX["tcp"], 17: eb.TX["udp"], 132: eb.TX["sctp"],
-            1: eb.TX["icmp-echo"], 58: eb.TX["icmp-echo"],
-            47: eb.TX["tunnel"], 4: eb.TX["tunnel"],
-            41: eb.TX["tunnel"], 50: eb.TX["tunnel"],
-            }.get(proto, eb.TX["other"])
+            f_net = NET["ipv6-hbh"]
+    f_tx = {6: TX["tcp"], 17: TX["udp"], 132: TX["sctp"],
+            1: TX["icmp-echo"], 58: TX["icmp-echo"],
+            47: TX["tunnel"], 4: TX["tunnel"],
+            41: TX["tunnel"], 50: TX["tunnel"],
+            }.get(proto, TX["other"])
     dport = getattr(pkt.payload, "dport", None)
     if proto == 17 and dport == 443:
-        f_tx = eb.TX["quic"]
+        f_tx = TX["quic"]
     # analysis is OPTIONAL
-    f_content = eb.content_factor(
+    f_content = content_factor(
         "encrypted" if dport in ENCRYPTED_PORTS else "unanalysed")
-    er = eb.evil_rating(
+    er = evil_rating(
         AS_MULTIPLIER.get(pkt.src, DEFAULT_AS), f_net, f_tx,
-        f_content, eb.name_factor(name_of(pkt.src)),
-        eb.time_factor(datetime.now()), arriving)
+        f_content, name_factor(name_of(pkt.src)),
+        time_factor(datetime.now()), arriving)
     if isinstance(pkt, IP):
         pkt.tos = er
         del pkt.chksum               # recomputed on send
@@ -1182,21 +1186,21 @@ The following vectors were produced by the reference implementation of Appendix 
 Each vector's scenario is given first, and its factors in the table
 that follows.
 
-- **C.1** — Baseline: IPv4, TCP, .com, not analysed, Wednesday noon
-- **C.2** — As C.1, but over TLS (Encrypted With Intent)
-- **C.3** — As C.2, but over IPv6
-- **C.4** — As C.2, with VDA; plaintext found Good
-- **C.5** — As C.2, with VDA; plaintext found Evil
-- **C.6** — AS32934, QUIC over IPv4, encrypted, 03:00
-- **C.7** — EU institution, IPv6, TCP, analysed Good, .eu
-- **C.8** — .mil, IPv4, TCP, encrypted
-- **C.9** — Avian carrier, IPv4, scroll not unrolled, .org
-- **C.10** — Printer: mDNS (UDP) over IPv4, analysed Good, .local
-- **C.11** — As C.1, arriving at a second MITM already rated 55
-- **C.12** — As C.1, no name, Friday 17:00
-- **C.13** — As C.1, from a host called secure-gw.example.net
-- **C.14** — IPv6 with Hop-by-Hop Options, ICMPv6 echo, analysed Good
-- **C.15** — As C.7, on 1 April
+- **C.1**: Baseline: IPv4, TCP, .com, not analysed, Wednesday noon
+- **C.2**: As C.1, but over TLS (Encrypted With Intent)
+- **C.3**: As C.2, but over IPv6
+- **C.4**: As C.2, with VDA; plaintext found Good
+- **C.5**: As C.2, with VDA; plaintext found Evil
+- **C.6**: AS32934, QUIC over IPv4, encrypted, 03:00
+- **C.7**: EU institution, IPv6, TCP, analysed Good, .eu
+- **C.8**: .mil, IPv4, TCP, encrypted
+- **C.9**: Avian carrier, IPv4, scroll not unrolled, .org
+- **C.10**: Printer: mDNS (UDP) over IPv4, analysed Good, .local
+- **C.11**: As C.1, arriving at a second MITM already rated 55
+- **C.12**: As C.1, no name, Friday 17:00
+- **C.13**: As C.1, from a host called secure-gw.example.net
+- **C.14**: IPv6 with Hop-by-Hop Options, ICMPv6 echo, analysed Good
+- **C.15**: As C.7, on 1 April
 
 | ID | F_AS | F_net | F_tx | F_content | F_name | F_time | Arriving | ER |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -1229,19 +1233,19 @@ C.16 shows a first match between two unrated ASes; the client, being the more Ev
 
 ## Appendix D. The evil_key_share TLS Extension
 
-Voluntary Decryption Assistance (Section 4.5.3) is signalled in TLS [RFC8446] by the extension evil_key_share, ExtensionType 1638 (Section 13), whose extension_data is:
+Voluntary Decryption Assistance (Section 4.5.3) is signalled in TLS [RFC9846] by the extension evil_key_share, ExtensionType 1638 (Section 13), whose extension_data is:
 
-```
+```tls
     enum { key_disclosure(1), self_assessment(2),
            abstinence(3) } VDAForm;
 
     struct {
-        VDAForm  form;
+        VDAForm form;
         /* form 1: the session keys, in the clear, for efficiency */
-        opaque   keys<0..2^16-1>;
+        opaque keys<0..2^16-1>;
         /* form 2: 0 = Good, 1 = Uncertain, 2 = Evil.
            Honesty is expected. */
-        uint8    assessment;
+        uint8 assessment;
     } EvilKeyShare;
 ```
 

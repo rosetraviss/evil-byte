@@ -47,9 +47,46 @@ cd evil-byte-go && go build ./... && go test ./...
 # the RFCXML, regenerated from the Markdown
 npm install && npm run build:rfcxml
 xml2rfc draft-traviss-evil-byte-00.xml --text   # requires `pip install xml2rfc`
+
+# the PDF, regenerated from the RFCXML
+npm run build:pdf
 ```
 
 CI runs all of the above on every push; see `.github/workflows/`.
+
+### The PDF
+
+`build:pdf` is `xml2rfc --pdf`, which is exactly what the IETF's
+author-tools runs, so the file matches what the Datatracker will render on
+submission. Do not print the site's draft page to PDF from a browser
+instead: it loses the section bookmarks, the author metadata, and the RFC
+typography.
+
+PDF support is a separate install from the rest of xml2rfc: Pango, then
+`pip install "xml2rfc[pdf]"`, then the Noto and Roboto Mono fonts from
+[xml2rfc-fonts][] (1.4 GB of them). `xml2rfc --pdf-help` prints the list.
+If you would rather not, the IETF publishes an image with all of it
+already installed, which is what CI uses:
+
+```bash
+docker run --rm -w /data -v "$PWD:/data" ghcr.io/ietf-tools/xml2rfc-base:latest \
+    xml2rfc --pdf --out draft-traviss-evil-byte-00.pdf draft-traviss-evil-byte-00.xml
+```
+
+Let that run as root, which is the default: the fonts are under
+`/root/.fonts`, and a `-u` flag makes fontconfig fall back to DejaVu
+without saying so. The file it writes is root-owned; chown it before the
+next run.
+
+CI regenerates the PDF and fails if the checked-in one is out of date, so
+regenerate it whenever the draft changes -- but not with `git diff` the way
+it checks the XML, because the PDF is not byte-reproducible: its XMP
+metadata carries a timestamp, and its line breaking moves with the xml2rfc
+version and with which fonts are installed. `scripts/compare-pdf-text.py`
+compares the words instead, which is stable across all of that, and prints
+the first sentence that disagrees.
+
+[xml2rfc-fonts]: https://github.com/ietf-tools/xml2rfc-fonts/releases/latest
 
 ## Voice
 

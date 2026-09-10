@@ -40,12 +40,15 @@ def name_factor(name):
     """Section 4.6.  `name` is the PTR name, Host, or SNI; None if absent."""
     if not name:
         return NO_NAME
-    labels = name.lower().rstrip(".").split(".")
-    if labels[-2:] == ["home", "arpa"]:
+    lowered = name.lower().rstrip(".")
+    labels = lowered.split(".")
+    tld = labels.pop()                     # the top-level label
+    parent = labels.pop() if labels else ""
+    if tld == "arpa" and parent == "home":
         f = NAME["local"]                  # it is your printer
     else:
-        f = NAME.get(labels[-1], 1.0)      # ccTLDs and unlisted gTLDs: 1.0
-    if any(word in name.lower() for word in PROTEST):
+        f = NAME.get(tld, 1.0)             # ccTLDs and unlisted gTLDs: 1.0
+    if any(word in lowered for word in PROTEST):
         f = max(f, 1.5)
     return f
 
