@@ -278,7 +278,7 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
         <email>rtraviss@evilbyte.net</email>
       </address>
     </author>
-    <date year="2026" month="September" day="9"/>
+    <date year="2026" month="September" day="10"/>
     <keyword>evil</keyword>
     <keyword>security</keyword>
     <abstract>
@@ -290,8 +290,11 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 ${middleSections.map((s) => renderSection(s)).join("\n")}
   </middle>
   <back>
+<references anchor="s-references">
+<name>References</name>
 ${renderReferenceGroup("Normative References", NORMATIVE)}
 ${renderReferenceGroup("Informative References", INFORMATIVE)}
+</references>
 ${backSections.map((s) => renderSection(s, s.title.startsWith("Appendix"))).join("\n")}
   </back>
 </rfc>

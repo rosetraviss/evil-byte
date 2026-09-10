@@ -1,7 +1,7 @@
 // Resolves a reverse-DNS (PTR) name for F_name — the same DoH lookup
 // site/src/index.js's live /api/rate handler makes (reverseDnsV4), but
 // D1-cached with a staleness TTL: PTR records rarely change, so re-running
-// this lookup for the same quiet IP every 15 minutes would be wasted work
+// this lookup for the same quiet IP every 5 minutes would be wasted work
 // and wasted per-run budget (see index.js's RDNS_LOOKUP_BUDGET). IPv6
 // reverse lookups are out of scope here too, same as the live worker.
 

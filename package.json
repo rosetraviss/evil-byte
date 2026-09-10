@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "build:rfcxml": "node scripts/build-rfcxml.mjs",
-    "build:pdf": "xml2rfc draft-traviss-evil-byte-00.xml --pdf -o draft-traviss-evil-byte-00.pdf"
+    "build:pdf": "xml2rfc draft-traviss-evil-byte-00.xml --pdf -o draft-traviss-evil-byte-00.pdf",
+    "check:nits": "node scripts/check-nits.mjs"
   },
   "devDependencies": {
+    "@ietf-tools/idnits": "^3.1.0",
     "marked": "^16.4.2"
   }
 }

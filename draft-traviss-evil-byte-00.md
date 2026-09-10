@@ -1,9 +1,9 @@
 ```
 Network Working Group                                         R. Traviss
 Internet-Draft                              Data Torturing Solutions Ltd
-Obsoletes: 3514 (if approved)                           9 September 2026
+Obsoletes: 3514 (if approved)                          10 September 2026
 Intended status: Informational
-Expires: 13 March 2027
+Expires: 14 March 2027
 ```
 
 # The Evil Byte: A Security Octet for the IPv4 and IPv6 Headers
@@ -24,13 +24,13 @@ Internet-Drafts are working documents of the Internet Engineering Task Force (IE
 
 Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."
 
-This Internet-Draft will expire on 13 March 2027. Its Evil Rating on submission was 255, which the author attributes to the submission tooling.
+This Internet-Draft will expire on 14 March 2027. Its Evil Rating on submission was 255, which the author attributes to the submission tooling.
 
 ## Copyright Notice
 
 Copyright (c) 2026 IETF Trust and the persons identified as the document authors. All rights reserved.
 
-This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Revised BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Revised BSD License.
+This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document.
 
 ## Table of Contents
 
